@@ -1,13 +1,5 @@
 @import './base.css';
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-
-  font-weight: normal;
-}
-
 a,
 .green {
   text-decoration: none;
@@ -15,9 +7,27 @@ a,
   transition: 0.4s;
 }
 
+@font-face {
+  font-family: GoogleSans;
+  src: url(./fonts/google-sans/GoogleSans-Regular.ttf);
+}
+
+@font-face {
+  font-family: GoogleSans-Bold;
+  src: url(./fonts/google-sans/GoogleSans-Bold.ttf);
+}
+
+@font-face {
+  font-family: SVN-SVN-A-Love-Of-Thunder;
+  src: url(./fonts/SVN-SVN-A-Love-Of-Thunder.ttf);
+}
+b{
+  font-family: GoogleSans-Bold;
+}
+
 @media (hover: hover) {
   a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+    color: #E91A22;
   }
 }
 
@@ -28,8 +38,35 @@ a,
   }
 
   #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
+    width: 100%;
   }
+}
+.header-top{
+  padding: 48px 0 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #F1F0F0;
+}
+.header-top .title-main{
+  color: #D4181F;
+font-size: 32px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+text-transform: uppercase;
+  font-family: SVN-SVN-A-Love-Of-Thunder;
+}
+.header-top .title-sub{
+  color: #0E0202;
+  font-family: GoogleSans;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  display: block;
+  margin-top: 20px;
+  text-transform: none;
+}
+
+.header-top .right-login svg{
+  margin: 0 10px;
 }
