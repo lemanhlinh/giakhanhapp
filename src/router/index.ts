@@ -32,7 +32,7 @@ export const routes: RouteRecordRaw[] = [
       component: () => import('../views/Stores/ListTableView.vue')
     },
     {
-      path: '/table-detail',
+      path: '/table-detail/:storeId/:tableId',
       name: 'tableDetail',
       meta: { requiresAuth: true },
       component: () => import('../views/Stores/DetailTableView.vue')
@@ -44,21 +44,22 @@ export const routes: RouteRecordRaw[] = [
       component: () => import('../views/Stores/PayTableView.vue')
     },
     {
-      path: '/danh-sach-dat-ban-truoc',
+      path: '/danh-sach-dat-ban-truoc/:storeId/:tableId',
       name: 'listBookTable',
       meta: { requiresAuth: true },
       component: () => import('../views/Stores/ListBookTableView.vue')
     },
     {
-      path: '/chi-tiet-them-moi-dat-ban',
-      name: 'detailBook',
-      component: () => import('../views/Stores/DetailBookTable.vue')
-    },
-    {
-      path: '/lich-su-dat-ban',
+      path: '/lich-su-dat-ban/:storeId/:tableId',
       name: 'historyBook',
       meta: { requiresAuth: true },
       component: () => import('../views/Stores/HistoryBookTable.vue')
+    },
+    {
+      path: '/dat-ban-cho-khach/:storeId/:tableId',
+      name: 'bookTable',
+      meta: { requiresAuth: true },
+      component: () => import('../views/Stores/FormBookTable.vue')
     },
 ]
 

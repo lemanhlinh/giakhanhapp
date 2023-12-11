@@ -6,14 +6,14 @@ interface UserInfo {
   name: Ref<string>;
 }
 
-const userInfo: UserInfo = {
+const userInfo = ref<UserInfo>({
   email: ref(''),
   name: ref(''),
-};
+}) ;
 
 const setUserInfo = (email: string, name: string) => {
-  userInfo.email.value = email;
-  userInfo.name.value = name;
+  userInfo.value = { email, name };
+  localStorage.setItem('userInfo', JSON.stringify(userInfo))
 };
 
 export { userInfo, setUserInfo };

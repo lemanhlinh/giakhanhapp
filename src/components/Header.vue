@@ -11,7 +11,7 @@
                 </p>
             </div>
             <div class="flex items-center right-login">
-                <UserIcon /> {{ name }} <BorderIcon /> <a href="" @click="handleLogout">Đăng xuất</a>
+                <UserIcon /> {{ user?.name }} <BorderIcon /> <a href="" @click="handleLogout">Đăng xuất</a>
             </div>
         </div>
     </div>
@@ -22,16 +22,22 @@
     import { logout as performLogout } from '@/composition/auth'
     import AppLink from '../components/AppLink.vue'
     import { useRouter } from 'vue-router'
-    import { userInfo } from '@/store/user';
-    import { ref } from 'vue';
+    import { ref, onMounted } from 'vue'
 
     const router = useRouter();
 
     const handleLogout = () => {
         performLogout();
-        router.push({ name: 'login' });
+        router.push({ name: 'userInfo' });
     };
-    const email = ref(userInfo.email.value);
-    const name = ref(userInfo.name.value);
+
+    const userInfoString = localStorage.getItem('userInfo'); 
+
+    const user = ref({});
+
+    if (userInfoString) {
+        const userInfo = JSON.parse(userInfoString);
+        user.value = userInfo._value;
+    }
 
 </script>

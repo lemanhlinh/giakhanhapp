@@ -4,7 +4,7 @@
         <div class="flex justify-between items-start menu-table">
             <ul class="flex items-center">
                 <li>
-                    <AppLink name="tableDetail" class="active">
+                    <AppLink name="tableDetail" :params="{storeId: storeId, tableId: tableId}" class="active">
                     Bàn đang sử dụng
                     </AppLink>
                 </li>
@@ -46,132 +46,6 @@
                             </a>
                         </div>
                     </li>
-                    <li class="flex justify-between items-center item-order">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <img src="https://launamgiakhanh.vn/storage/upload_image/images/Rectangle 1 (2).jpg" alt="" class="object-contain">
-                            </div>
-                            <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <span>SL</span>
-                            <input type="text" value="1" class="input-ordered">
-                            <a href="">
-                                <IconDeleteFood />
-                            </a>
-                        </div>
-                    </li>
-                    <li class="flex justify-between items-center item-order">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <img src="https://launamgiakhanh.vn/storage/upload_image/images/Rectangle 1 (2).jpg" alt="" class="object-contain">
-                            </div>
-                            <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <span>SL</span>
-                            <input type="text" value="1" class="input-ordered">
-                            <a href="">
-                                <IconDeleteFood />
-                            </a>
-                        </div>
-                    </li>
-                    <li class="flex justify-between items-center item-order">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <img src="https://launamgiakhanh.vn/storage/upload_image/images/Rectangle 1 (2).jpg" alt="" class="object-contain">
-                            </div>
-                            <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <span>SL</span>
-                            <input type="text" value="1" class="input-ordered">
-                            <a href="">
-                                <IconDeleteFood />
-                            </a>
-                        </div>
-                    </li>
-                    <li class="flex justify-between items-center item-order">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <img src="https://launamgiakhanh.vn/storage/upload_image/images/Rectangle 1 (2).jpg" alt="" class="object-contain">
-                            </div>
-                            <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <span>SL</span>
-                            <input type="text" value="1" class="input-ordered">
-                            <a href="">
-                                <IconDeleteFood />
-                            </a>
-                        </div>
-                    </li>
-                    <li class="flex justify-between items-center item-order">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <img src="https://launamgiakhanh.vn/storage/upload_image/images/Rectangle 1 (2).jpg" alt="" class="object-contain">
-                            </div>
-                            <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <span>SL</span>
-                            <input type="text" value="1" class="input-ordered">
-                            <a href="">
-                                <IconDeleteFood />
-                            </a>
-                        </div>
-                    </li>
-                    <li class="flex justify-between items-center item-order">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <img src="https://launamgiakhanh.vn/storage/upload_image/images/Rectangle 1 (2).jpg" alt="" class="object-contain">
-                            </div>
-                            <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <span>SL</span>
-                            <input type="text" value="1" class="input-ordered">
-                            <a href="">
-                                <IconDeleteFood />
-                            </a>
-                        </div>
-                    </li>
-                    <li class="flex justify-between items-center item-order">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <img src="https://launamgiakhanh.vn/storage/upload_image/images/Rectangle 1 (2).jpg" alt="" class="object-contain">
-                            </div>
-                            <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <span>SL</span>
-                            <input type="text" value="1" class="input-ordered">
-                            <a href="">
-                                <IconDeleteFood />
-                            </a>
-                        </div>
-                    </li>
                 </ul>
                 <div class="total-price">
                     <b>Tạm tính: <span>1.126.000đ</span></b>
@@ -192,114 +66,14 @@
                     <IconSearch class="absolute right-1.5 top-2" />
                 </div>
                 <ul class="list-order">
-                    <li class="flex justify-between items-center item-order">
+                    <li class="flex justify-between items-center item-order" v-if="listFood" v-for="(food, index) in listFood" :key="index">
                         <div class="flex items-center left-food">
                             <div class="image-food mr-2">
                                 <IconAddMoreFood/>
                             </div>
                             <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <a href="" class="mr-2">
-                                <IconMinusFood />
-                            </a>
-                            <input type="text" value="1" class="input-ordered">
-                            <a href="">
-                                <IconPlusFood />
-                            </a>
-                        </div>
-                    </li>
-                    <li class="flex justify-between items-center item-order">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <IconAddMoreFood/>
-                            </div>
-                            <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <a href="" class="mr-2">
-                                <IconMinusFood />
-                            </a>
-                            <input type="text" value="1" class="input-ordered">
-                            <a href="">
-                                <IconPlusFood />
-                            </a>
-                        </div>
-                    </li>
-                    <li class="flex justify-between items-center item-order">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <IconAddMoreFood/>
-                            </div>
-                            <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <a href="" class="mr-2">
-                                <IconMinusFood />
-                            </a>
-                            <input type="text" value="1" class="input-ordered">
-                            <a href="">
-                                <IconPlusFood />
-                            </a>
-                        </div>
-                    </li>
-                    <li class="flex justify-between items-center item-order">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <IconAddMoreFood/>
-                            </div>
-                            <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <a href="" class="mr-2">
-                                <IconMinusFood />
-                            </a>
-                            <input type="text" value="1" class="input-ordered">
-                            <a href="">
-                                <IconPlusFood />
-                            </a>
-                        </div>
-                    </li>
-                    <li class="flex justify-between items-center item-order">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <IconAddMoreFood/>
-                            </div>
-                            <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <a href="" class="mr-2">
-                                <IconMinusFood />
-                            </a>
-                            <input type="text" value="1" class="input-ordered">
-                            <a href="">
-                                <IconPlusFood />
-                            </a>
-                        </div>
-                    </li>
-                    <li class="flex justify-between items-center item-order">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <IconAddMoreFood/>
-                            </div>
-                            <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
+                                <p>{{ food?.title }}</p>
+                                <p>Đơn giá: {{ food?.price }}đ</p>
                             </div>
                         </div>
                         <div class="flex items-center right-food">
@@ -452,4 +226,24 @@
   import IconSearch from '../../components/icons/IconSearch.vue'
   import IconArrowRightWhite from '../../components/icons/IconArrowRightWhite.vue'
   import AppLink from '../../components/AppLink.vue'
+
+  import { ref, onMounted } from 'vue';
+    import { get } from '../../services/api';
+    import { useRoute } from 'vue-router';
+
+    const { storeId, tableId } = useRoute().params;
+    
+    const listFood = ref([]);
+
+    const fetchTableData = async () => {
+    try {
+        const response = await get(`/danh-sach-mon`);
+        listFood.value = response.data; 
+    } catch (error) {
+        console.error('Error fetching table data:', error);
+    }
+    };
+
+onMounted(fetchTableData);
+
 </script>

@@ -1,5 +1,7 @@
 import { ref } from 'vue';
 import axios from "axios";
+import { logout } from '@/composition/auth';
+
 const API_URL = 'http://giakhanh.local/api';
 
 const token = ref(null);
@@ -25,14 +27,32 @@ const removeToken = () => {
   delete axios.defaults.headers.common['Authorization'];
 };
 
-const post = (resource, data) => {
+const post = async (resource, data) => {
   setAuthHeader();
-  return axios.post(`${API_URL}${resource}`, data);
+  try {
+    const response = await axios.post(`${API_URL}${resource}`, data);
+    return response;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
 };
 
-const get = (resource) => {
+const get = async (resource) => {
   setAuthHeader();
-  return axios.get(`${API_URL}${resource}`);
+  try {
+    const response = await axios.get(`${API_URL}${resource}`);
+    return response;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+};
+
+const handleApiError = (error) => {
+  if (error.response && error.response.status === 401 && error.response.data.message === 'Unauthenticated.') {
+    logout(); 
+  }
 };
 
 export { setToken, removeToken, post, get };
