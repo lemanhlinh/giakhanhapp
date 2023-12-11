@@ -11,7 +11,7 @@
                 </p>
             </div>
             <div class="flex items-center right-login">
-                <UserIcon /> {{ userStore.user.name }} <BorderIcon /> <a href="" @click="onLogout">Đăng xuất</a>
+                <UserIcon /> {{ name }} <BorderIcon /> <a href="" @click="handleLogout">Đăng xuất</a>
             </div>
         </div>
     </div>
@@ -19,13 +19,19 @@
 <script setup lang="ts">
     import UserIcon from './icons/IconUser.vue'
     import BorderIcon from './icons/IconBorder.vue'
-    import { routerPush } from '../router'
-    import { useUserStore } from '../store/user'
+    import { logout as performLogout } from '@/composition/auth'
+    import AppLink from '../components/AppLink.vue'
+    import { useRouter } from 'vue-router'
+    import { userInfo } from '@/store/user';
+    import { ref } from 'vue';
 
-    const userStore = useUserStore()
+    const router = useRouter();
 
-    const onLogout = async () => {
-    userStore.updateUser(null)
-     await routerPush('login')
-}
+    const handleLogout = () => {
+        performLogout();
+        router.push({ name: 'login' });
+    };
+    const email = ref(userInfo.email.value);
+    const name = ref(userInfo.name.value);
+
 </script>

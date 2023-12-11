@@ -1,24 +1,29 @@
 <template>
-<div class="list-table">
-      <div class="container mx-auto">
-        <div class="box-floor" v-if="storeTable" v-for="(floor, index) in storeTable" :key="index">
-            <h2 class="title-floor text-center">{{  floor.name }}</h2>
-            <div class="grid grid-cols-3 gap-10 list-table">
-                <div class="item-table" v-if="floor.floor_desk" v-for="(table, index) in floor.floor_desk" :key="index">
-                    <div class="name-table">
-                        <a href="" class="flex items-center"><IconOrder class=" mr-2" />{{ table.name }}</a>
-                    </div>
-                    <div class="flex justify-between items-center show-detail-table">
-                        <p class="flex flex-col">
-                            <span>Anh Toàn - 0978219820</span>
-                            <span>Đến lúc 11:30 ngày 22/5/2023</span>
-                        </p>
-                        <a class="flex items-center detail-store">Chi tiết <IconArrowRightBrown /></a>
-                    </div>
-                </div> 
+    <div class="list-table">
+        <div class="container mx-auto">
+            <div class="box-floor" v-if="storeTable" v-for="(floor, index) in storeTable" :key="index">
+                <h2 class="title-floor text-center">{{  floor.name }}</h2>
+                <div class="grid grid-cols-3 gap-10 list-table">
+                    <div class="item-table" v-if="floor.floor_desk" v-for="(table, index) in floor.floor_desk" :key="index">
+                        <div class="name-table">
+                            <AppLink
+                                name="tableDetail"
+                                class="flex items-center"
+                            >
+                            <IconOrder class=" mr-2" />{{ table.name }}
+                            </AppLink>
+                        </div>
+                        <div class="flex justify-between items-center show-detail-table">
+                            <p class="flex flex-col">
+                                <span>Anh Toàn - 0978219820</span>
+                                <span>Đến lúc 11:30 ngày 22/5/2023</span>
+                            </p>
+                            <a class="flex items-center detail-store">Chi tiết <IconArrowRightBrown /></a>
+                        </div>
+                    </div> 
+                </div>
             </div>
         </div>
-      </div>
     </div>
 </template>
 <style scoped lang="scss">
@@ -82,17 +87,30 @@
 }
 </style>
 <script setup lang="ts">
-  import IconWrapper from '../../components/icons/IconWrapper.vue'
-  import IconArrowRightBrown from '../../components/icons/IconArrowRightBrown.vue'
-  import IconArrowRightWhite from '../../components/icons/IconArrowRightWhite.vue'
-  import IconOrder from '../../components/icons/IconOrder.vue'
-  import IconTableNull from '../../components/icons/IconTableNull.vue'
-  import IconTableBook from '../../components/icons/IconTableBook.vue'
+    import IconWrapper from '../../components/icons/IconWrapper.vue'
+    import IconArrowRightBrown from '../../components/icons/IconArrowRightBrown.vue'
+    import IconArrowRightWhite from '../../components/icons/IconArrowRightWhite.vue'
+    import IconOrder from '../../components/icons/IconOrder.vue'
+    import IconTableNull from '../../components/icons/IconTableNull.vue'
+    import IconTableBook from '../../components/icons/IconTableBook.vue'
+    import AppLink from '../../components/AppLink.vue'
 
-  import { useStoreTable } from '../../composable/useStoresTables'
+    import { ref, onMounted } from 'vue';
+    import { useRoute } from 'vue-router';
+    import { get } from '../../services/api';
 
-    const { storeTable, fetchStoreTables } = useStoreTable()
+    const storeTable = ref([]);
 
-    await fetchStoreTables()
+    const fetchTableData = async () => {
+    try {
+        const { id } = useRoute().params;
+        const response = await get(`/danh-sach-ban/${id}`);
+        storeTable.value = response.data; 
+    } catch (error) {
+        console.error('Error fetching table data:', error);
+    }
+    };
+
+onMounted(fetchTableData);
 
 </script>

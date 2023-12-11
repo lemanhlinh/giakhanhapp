@@ -1,27 +1,22 @@
-<script setup lang="ts">
-  import IconBackTable from '../../components/icons/IconBackTable.vue'
-  import IconOrder from '../../components/icons/IconOrder.vue'
-  import IconAddFood from '../../components/icons/IconAddFood.vue'
-  import IconDeleteFood from '../../components/icons/IconDeleteFood.vue'
-  import IconAddMoreFood from '../../components/icons/IconAddMoreFood.vue'
-  import IconMinusFood from '../../components/icons/IconMinusFood.vue'
-  import IconPlusFood from '../../components/icons/IconPlusFood.vue'
-  import IconSearch from '../../components/icons/IconSearch.vue'
-  import IconArrowRightWhite from '../../components/icons/IconArrowRightWhite.vue'
-</script>
 <template>
     <div class="detail-table mb-20">
       <div class="container mx-auto">
         <div class="flex justify-between items-start menu-table">
             <ul class="flex items-center">
                 <li>
-                    <a href="" class="active">Bàn đang sử dụng</a>
+                    <AppLink name="tableDetail" class="active">
+                    Bàn đang sử dụng
+                    </AppLink>
                 </li>
                 <li>
-                    <a href="">Bàn đặt trước</a>
+                    <AppLink name="listBookTable" >
+                    Bàn đặt trước
+                    </AppLink>
                 </li>
                 <li>
-                    <a href="">Lịch sử đặt bàn</a>
+                    <AppLink name="historyBook" >
+                    Lịch sử đặt bàn
+                    </AppLink>
                 </li>
             </ul>
         <a href="" class="flex justify-between back-to-list-table"><IconBackTable class="mr-1.5" />Quay lại danh sách đặt bàn</a>
@@ -182,7 +177,12 @@
                     <b>Tạm tính: <span>1.126.000đ</span></b>
                 </div>
                 <p class="grid grid-cols-4">
-                    <a class="flex items-center detail-store">Thanh toán <IconArrowRightWhite /></a>
+                    <AppLink
+                            name="payTable"
+                            class="flex items-center detail-store"
+                        >
+                    Thanh toán <IconArrowRightWhite />
+                    </AppLink>
                 </p>
             </div>
             <div class="bg-order list-order-more">
@@ -441,3 +441,15 @@
     }
 }
 </style>
+<script setup lang="ts">
+  import IconBackTable from '../../components/icons/IconBackTable.vue'
+  import IconOrder from '../../components/icons/IconOrder.vue'
+  import IconAddFood from '../../components/icons/IconAddFood.vue'
+  import IconDeleteFood from '../../components/icons/IconDeleteFood.vue'
+  import IconAddMoreFood from '../../components/icons/IconAddMoreFood.vue'
+  import IconMinusFood from '../../components/icons/IconMinusFood.vue'
+  import IconPlusFood from '../../components/icons/IconPlusFood.vue'
+  import IconSearch from '../../components/icons/IconSearch.vue'
+  import IconArrowRightWhite from '../../components/icons/IconArrowRightWhite.vue'
+  import AppLink from '../../components/AppLink.vue'
+</script>
