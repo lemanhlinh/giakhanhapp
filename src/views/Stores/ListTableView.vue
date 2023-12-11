@@ -8,6 +8,7 @@
                         <div class="name-table">
                             <AppLink
                                 name="tableDetail"
+                                :params="{storeId: id, tableId: table.id}"
                                 class="flex items-center"
                             >
                             <IconOrder class=" mr-2" />{{ table.name }}
@@ -18,7 +19,12 @@
                                 <span>Anh Toàn - 0978219820</span>
                                 <span>Đến lúc 11:30 ngày 22/5/2023</span>
                             </p>
-                            <a class="flex items-center detail-store">Chi tiết <IconArrowRightBrown /></a>
+                            <AppLink
+                                name="tableDetail"
+                                :params="{storeId: id, tableId: table.id}"
+                                class="flex items-center detail-store"
+                                >Chi tiết <IconArrowRightBrown />
+                            </AppLink>
                         </div>
                     </div> 
                 </div>
@@ -101,9 +107,11 @@
 
     const storeTable = ref([]);
 
+    const { id } = useRoute().params;
+
     const fetchTableData = async () => {
     try {
-        const { id } = useRoute().params;
+        
         const response = await get(`/danh-sach-ban/${id}`);
         storeTable.value = response.data; 
     } catch (error) {

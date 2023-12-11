@@ -4,7 +4,7 @@
         <div class="flex justify-between items-start menu-table">
             <ul class="flex items-center">
                 <li>
-                    <AppLink name="tableDetail">Bàn đang sử dụng</AppLink>
+                    <AppLink name="tableDetail" :params="{storeId: storeId, tableId: tableId}" >Bàn đang sử dụng</AppLink>
                 </li>
                 <li>
                     <AppLink name="listBookTable">Bàn đặt trước</AppLink>
@@ -137,4 +137,7 @@
   import IconDeleteBook from '../../components/icons/IconDeleteBook.vue'
   import IconDeleteBookNone from '../../components/icons/IconDeleteBookNone.vue'
   import AppLink from '../../components/AppLink.vue'
+  import { useRoute } from 'vue-router';
+
+const { storeId, tableId } = useRoute().params;
 </script>

@@ -25,4 +25,5 @@ export const logout = () => {
   removeToken();
   isAuthenticated.value = false;
   localStorage.removeItem('token');
+  localStorage.removeItem('userInfo');
 };
