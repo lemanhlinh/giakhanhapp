@@ -90,23 +90,9 @@
   import IconTableBook from '../../components/icons/IconTableBook.vue'
 
   import { useStoreTable } from '../../composable/useStoresTables'
-  import { ref } from 'vue'
-
-const list_messages = ref([]);
 
     const { storeTable, fetchStoreTables } = useStoreTable()
 
     await fetchStoreTables()
-
-
-
-Echo.channel('laravel_database_chatroom')
-.listen('App\Events\MessagePosted', (data) => {
-    console.log(data);
-    const message = data.message
-    console.log(message);
-    list_messages.value.push(message)
-    console.log(list_messages);
-})
 
 </script>
