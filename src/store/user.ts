@@ -1,32 +1,19 @@
-import { computed, ref } from 'vue'
-import { defineStore } from 'pinia'
-import { api } from '../services'
-import type { User } from '../services/api'
-import Storage from '../utils/storage'
+import { ref } from 'vue';
+import type { Ref } from 'vue';
 
-export const userStorage = new Storage<User>('user')
+interface UserInfo {
+  email: Ref<string>;
+  name: Ref<string>;
+}
 
-export const isAuthorized = (): boolean => !!userStorage.get()
+const userInfo: UserInfo = {
+  email: ref(''),
+  name: ref(''),
+};
 
-export const useUserStore = defineStore('user', () => {
-  const user = ref(userStorage.get())
-  const isAuthorized = computed(() => !!user.value)
+const setUserInfo = (email: string, name: string) => {
+  userInfo.email.value = email;
+  userInfo.name.value = name;
+};
 
-  function updateUser (userData?: User | null) {
-    if (userData) {
-      userStorage.set(userData)
-      api.setSecurityData(userData.access_token)
-      user.value = userData
-    } else {
-      userStorage.remove()
-      api.setSecurityData(null)
-      user.value = null
-    }
-  }
-
-  return {
-    user,
-    isAuthorized,
-    updateUser,
-  }
-})
+export { userInfo, setUserInfo };

@@ -1,5 +1,5 @@
 <template>
-  <header v-if="userStore.isAuthorized">
+  <header v-if="isAuthenticated">
     <div class="container mx-auto">
       <HeaderTop></HeaderTop>
     </div>
@@ -11,7 +11,7 @@
   </template>
 </Suspense>
   
-  <footer v-if="userStore.isAuthorized">
+  <footer v-if="isAuthenticated">
     <div class="container mx-auto">
       
     </div>    
@@ -23,19 +23,7 @@
 
 </style>
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
-import { RouterLink, RouterView } from 'vue-router'
-import { routerPush } from './router'
-import type { UpdateUser } from './services/api'
 import HeaderTop from './components/Header.vue'
-import { useUserStore } from './store/user'
 
-const form: UpdateUser = reactive({})
-const userStore = useUserStore()
-onMounted(async () => {
-  if (!userStore.isAuthorized) return await routerPush('login')
-
-  form.name = userStore.user?.name
-  form.email = userStore.user?.email
-})
+import { isAuthenticated } from '@/composition/auth';
 </script>

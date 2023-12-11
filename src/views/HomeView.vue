@@ -2,7 +2,7 @@
   <main>
     <div class="container mx-auto">
       <div class="grid grid-cols-3 gap-10 list-store">
-        <div class="item-store" v-if="stores" v-for="(store, index) in stores" :key="index">
+        <div class="item-store" v-if="tableData" v-for="(store, index) in tableData" :key="index">
           <div class="name-store">
             <AppLink
                 name="listTable"
@@ -67,10 +67,21 @@
 <script setup lang="ts">
   import IconWrapper from '../components/icons/IconWrapper.vue'
   import IconArrowRightWhite from '../components/icons/IconArrowRightWhite.vue'
+  import AppLink from '../components/AppLink.vue'
 
-  import { useStores } from '../composable/useStores'
+  import { ref, onMounted } from 'vue';
+  import { get } from '../services/api';
 
-  const { stores, fetchStores } = useStores()
+  const tableData = ref([]);
 
-  await fetchStores()
+  const fetchTableData = async () => {
+    try {
+      const response = await get('/danh-sach-cua-hang');
+      tableData.value = response.data; 
+    } catch (error) {
+      console.error('Error fetching table data:', error);
+    }
+  };
+
+onMounted(fetchTableData);
 </script>

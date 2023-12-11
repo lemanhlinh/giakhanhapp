@@ -1,22 +1,16 @@
-<script setup lang="ts">
-  import IconBackTable from '../../components/icons/IconBackTable.vue'
-  import IconAddBook from '../../components/icons/IconAddBook.vue'
-  import IconDeleteBook from '../../components/icons/IconDeleteBook.vue'
-  import IconDeleteBookNone from '../../components/icons/IconDeleteBookNone.vue'
-</script>
 <template>
     <div class="detail-table mb-20">
       <div class="container mx-auto">
         <div class="flex justify-between items-start menu-table">
             <ul class="flex items-center">
                 <li>
-                    <a href="" >Bàn đang sử dụng</a>
+                    <AppLink name="tableDetail">Bàn đang sử dụng</AppLink>
                 </li>
                 <li>
-                    <a href="" >Bàn đặt trước</a>
+                    <AppLink name="listBookTable">Bàn đặt trước</AppLink>
                 </li>
                 <li>
-                    <a href="" class="active">Lịch sử đặt bàn</a>
+                    <AppLink name="historyBook"  class="active">Lịch sử đặt bàn</AppLink>
                 </li>
             </ul>
         <a href="" class="flex justify-between back-to-list-table"><IconBackTable class="mr-1.5" />Quay lại danh sách đặt bàn</a>
@@ -137,3 +131,10 @@
     }
 }
 </style>
+<script setup lang="ts">
+  import IconBackTable from '../../components/icons/IconBackTable.vue'
+  import IconAddBook from '../../components/icons/IconAddBook.vue'
+  import IconDeleteBook from '../../components/icons/IconDeleteBook.vue'
+  import IconDeleteBookNone from '../../components/icons/IconDeleteBookNone.vue'
+  import AppLink from '../../components/AppLink.vue'
+</script>

@@ -9,11 +9,11 @@
             <form 
               ref="formRef"
               aria-label="Login form"
-              @submit.prevent="login"
+              @submit.prevent="handleLogin"
             >
-              <input type="email" placeholder="Tên đăng nhập" class="" v-model="form.email" required>
-              <input type="password" placeholder="Mật khẩu" v-model="form.password" required>
-              <button type="submit" class="submit-form-login" :disabled="!form.email || !form.password">Đăng nhập</button>
+              <input type="email" placeholder="Tên đăng nhập" class="" v-model="email" required>
+              <input type="password" placeholder="Mật khẩu" v-model="password" required>
+              <button type="submit" class="submit-form-login" :disabled="!email || !password">Đăng nhập</button>
             </form>
         </div>
         </div>        
@@ -86,38 +86,22 @@
   </style>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
-import { routerPush } from '../router'
-import { api, isFetchError } from '../services'
-import type { LoginUser } from '../services/api'
-import { useUserStore } from '../store/user'
+import { ref } from 'vue';
+import { login } from '@/composition/auth';
+import { useRouter } from 'vue-router';
 
-const formRef = ref<HTMLFormElement | null>(null)
-const form: LoginUser = reactive({
-  email: '',
-  password: '',
-})
+const email = ref('');
+const password = ref('');
+const router = useRouter();
 
-const { updateUser } = useUserStore()
-
-const errors = ref()
-
-const login = async () => {
-  errors.value = {}
-
-  if (!formRef.value?.checkValidity()) return
-
+const handleLogin = async () => {
   try {
-    const result = await api.users.login({ user: form })
-    updateUser(result.data)
-    await routerPush('home')
+    await login({ email: email.value, password: password.value });
+    router.push({ name: 'home' });
   } catch (error) {
-    if (isFetchError(error)) {
-      errors.value = error.error?.errors
-      return
-    }
-    console.error(error)
+    // alert('Sai tên đăng nhập hoặc mật khẩu');
+    console.error('Login error:', error);
   }
-}
+};
 
 </script>
