@@ -6,7 +6,12 @@
             <div class="grid grid-cols-3 gap-10 list-table">
                 <div class="item-table" v-if="floor.floor_desk" v-for="(table, index) in floor.floor_desk" :key="index">
                     <div class="name-table">
-                        <a href="" class="flex items-center"><IconOrder class=" mr-2" />{{ table.name }}</a>
+                        <AppLink
+                            name="tableDetail"
+                            class="flex items-center"
+                        >
+                        <IconOrder class=" mr-2" />{{ table.name }}
+                        </AppLink>
                     </div>
                     <div class="flex justify-between items-center show-detail-table">
                         <p class="flex flex-col">
@@ -88,25 +93,24 @@
   import IconOrder from '../../components/icons/IconOrder.vue'
   import IconTableNull from '../../components/icons/IconTableNull.vue'
   import IconTableBook from '../../components/icons/IconTableBook.vue'
+  import AppLink from '../../components/AppLink.vue'
 
-  import { useStoreTable } from '../../composable/useStoresTables'
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue';
+  import { useRoute } from 'vue-router';
+  import { get } from '../../services/api';
 
-const list_messages = ref([]);
+  const storeTable = ref([]);
 
-    const { storeTable, fetchStoreTables } = useStoreTable()
+  const fetchTableData = async () => {
+    try {
+        const { id } = useRoute().params;
+        const response = await get(`/danh-sach-ban/${id}`);
+      storeTable.value = response.data; 
+    } catch (error) {
+      console.error('Error fetching table data:', error);
+    }
+  };
 
-    await fetchStoreTables()
-
-
-
-Echo.channel('laravel_database_chatroom')
-.listen('App\Events\MessagePosted', (data) => {
-    console.log(data);
-    const message = data.message
-    console.log(message);
-    list_messages.value.push(message)
-    console.log(list_messages);
-})
+onMounted(fetchTableData);
 
 </script>
