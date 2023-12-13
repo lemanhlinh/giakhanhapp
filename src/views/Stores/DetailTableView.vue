@@ -21,72 +21,108 @@
             </ul>
         <a href="" class="flex justify-between back-to-list-table"><IconBackTable class="mr-1.5" />Quay lại danh sách đặt bàn</a>
         </div>
-        <div class="grid grid-cols-2 gap-10">
-            <div class="bg-order list-ordered">
-                <div class="flex items-center title-menu"><IconOrder class=" mr-2" />Thực đơn dùng</div>
-                <p class="time-into-table">
-                    <b>Bắt đầu:</b> 11:30 ngày 22/5/2023
-                </p>
-                <ul class="list-order">
-                    <li class="flex justify-between items-center item-order">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <img src="https://launamgiakhanh.vn/storage/upload_image/images/Rectangle 1 (2).jpg" alt="" class="object-contain">
-                            </div>
-                            <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <span>SL</span>
-                            <input type="text" value="1" class="input-ordered">
-                            <a href="">
-                                <IconDeleteFood />
-                            </a>
-                        </div>
-                    </li>
-                </ul>
-                <div class="total-price">
-                    <b>Tạm tính: <span>1.126.000đ</span></b>
-                </div>
-                <p class="grid grid-cols-4">
-                    <AppLink
-                            name="payTable"
-                            class="flex items-center detail-store"
-                        >
-                    Thanh toán <IconArrowRightWhite />
-                    </AppLink>
-                </p>
+        <div v-if="dataTable.status == 1">
+            <div class="grid text-center place-content-center">
+                <IconTableNullImage />
+                Hiện tại bàn đang trống
+                <button
+                        @click="handleClickChangeStatus()"
+                        class="text-center detail-store"
+                    >
+                Sử dụng bàn <IconArrowRightWhite />
+                </button>
             </div>
-            <div class="bg-order list-order-more">
-                <div class="flex items-center title-menu"><IconAddFood class=" mr-2" />Thêm món</div>
-                <div class="relative mb-4 group-search-food">
-                    <input type="text" placeholder="Tìm món" class="search-food-now">
-                    <IconSearch class="absolute right-1.5 top-2" />
+        </div>
+        <div v-else>
+            <div class="grid grid-cols-2 gap-10">
+                <div class="bg-order list-ordered">
+                    <div class="flex items-center title-menu"><IconOrder class=" mr-2" />Thực đơn dùng</div>
+                    <p class="time-into-table">
+                        <b>Bắt đầu:</b> 11:30 ngày 22/5/2023
+                    </p>
+                    <ul class="list-order">
+                        <li
+                            class="flex justify-between items-center item-order"
+                            v-for="(orderItem, index) in orderList"
+                            :key="index"
+                        >
+                            <div class="flex items-center left-food">
+                                <div class="image-food mr-2">
+                                    <img src="https://launamgiakhanh.vn/storage/upload_image/images/Rectangle 1 (2).jpg" alt="" class="object-contain">
+                                </div>
+                                <div class="name-price">
+                                    <p>{{  orderItem.title }}</p>
+                                    <p>Đơn giá: 145.000đ</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center right-food">
+                                <span>SL</span>
+                                <input type="text" v-model="orderItem.quantity" class="input-ordered">
+                                <a href="" @click.prevent="removeFromOrderList(index)">
+                                    <IconDeleteFood />
+                                </a>
+                            </div>
+                        </li>
+                        <li class="flex justify-between items-center item-order">
+                            <div class="flex items-center left-food">
+                                <div class="image-food mr-2">
+                                    <img src="https://launamgiakhanh.vn/storage/upload_image/images/Rectangle 1 (2).jpg" alt="" class="object-contain">
+                                </div>
+                                <div class="name-price">
+                                    <p>Canh đặc biệt</p>
+                                    <p>Đơn giá: 145.000đ</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center right-food">
+                                <span>SL</span>
+                                <input type="text" value="1" class="input-ordered">
+                                <a href="">
+                                    <IconDeleteFood />
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="total-price">
+                        <b>Tạm tính: <span>1.126.000đ</span></b>
+                    </div>
+                    <p class="grid grid-cols-4">
+                        <AppLink
+                                name="payTable"
+                                class="flex items-center detail-store"
+                            >
+                        Thanh toán <IconArrowRightWhite />
+                        </AppLink>
+                    </p>
                 </div>
-                <ul class="list-order">
-                    <li class="flex justify-between items-center item-order" v-if="listFood" v-for="(food, index) in listFood" :key="index">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <IconAddMoreFood/>
+                <div class="bg-order list-order-more">
+                    <div class="flex items-center title-menu"><IconAddFood class=" mr-2" />Thêm món</div>
+                    <div class="relative mb-4 group-search-food">
+                        <input type="text" placeholder="Tìm món" class="search-food-now">
+                        <IconSearch class="absolute right-1.5 top-2" />
+                    </div>
+                    <ul class="list-order">
+                        <li class="flex justify-between items-center item-order" v-if="listFood" v-for="(food, index) in listFood" :key="index">
+                            <div class="flex items-center left-food">
+                                <div class="image-food mr-2">
+                                    <IconAddMoreFood/>
+                                </div>
+                                <div class="name-price"  @click="addToOrderList(food)">
+                                    <p>{{ food?.title }}</p>
+                                    <p>Đơn giá: {{ food?.price }}đ</p>
+                                </div>
                             </div>
-                            <div class="name-price">
-                                <p>{{ food?.title }}</p>
-                                <p>Đơn giá: {{ food?.price }}đ</p>
+                            <div class="flex items-center right-food">
+                                <a href="" class="mr-2" @click.prevent="decreaseQuantity(index)">
+                                    <IconMinusFood />
+                                </a>
+                                <input type="text" v-model="food.quantity" class="input-ordered">
+                                <a href="" @click.prevent="increaseQuantity(index)">
+                                    <IconPlusFood />
+                                </a>
                             </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <a href="" class="mr-2">
-                                <IconMinusFood />
-                            </a>
-                            <input type="text" value="1" class="input-ordered">
-                            <a href="">
-                                <IconPlusFood />
-                            </a>
-                        </div>
-                    </li>
-                </ul>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
       </div>
@@ -225,25 +261,90 @@
   import IconPlusFood from '../../components/icons/IconPlusFood.vue'
   import IconSearch from '../../components/icons/IconSearch.vue'
   import IconArrowRightWhite from '../../components/icons/IconArrowRightWhite.vue'
+  import IconTableNullImage from '../../components/icons/IconTableNullImage.vue'
   import AppLink from '../../components/AppLink.vue'
 
   import { ref, onMounted } from 'vue';
-    import { get } from '../../services/api';
-    import { useRoute } from 'vue-router';
+    import { get, post } from '../../services/api';
+    import { useRoute, useRouter } from 'vue-router';
+    const router = useRouter();
 
     const { storeId, tableId } = useRoute().params;
     
     const listFood = ref([]);
+    const dataTable = ref([]);
+    const orderList = ref([]);
 
-    const fetchTableData = async () => {
-    try {
-        const response = await get(`/danh-sach-mon`);
-        listFood.value = response.data; 
-    } catch (error) {
-        console.error('Error fetching table data:', error);
-    }
+    const detailTable = async () => {
+        try {
+            const response = await get(`/chi-tiet-ban/${storeId}/${tableId}`);
+            dataTable.value = response.data; 
+        } catch (error) {
+            console.error('Error fetching table data:', error);
+        }
     };
 
-onMounted(fetchTableData);
+    const listFoods = async () => {
+        try {
+            const response = await get(`/danh-sach-mon`);
+            listFood.value = response.data.map((food) => ({ ...food, quantity: 1 }));
+        } catch (error) {
+            console.error('Error fetching table data:', error);
+        }
+    };
+
+    const handleClickChangeStatus = async () => {
+        try {
+            const data = {
+                store_id: storeId,
+                table_id: tableId,
+                status: 3,
+            }
+            const response = await post(`/su-dung-ban`, data);
+            if(response.data){
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error('Error fetching table data:', error);
+        }
+    };
+
+    const decreaseQuantity = (index: number) => {
+        if (listFood.value[index].quantity > 1) {
+            listFood.value[index].quantity--;
+        }
+    };
+
+    const increaseQuantity = (index: number) => {
+        listFood.value[index].quantity++;
+    };
+
+    const addToOrderList = (food) => {
+        // Truy cập giá trị thực của ref để đảm bảo là một mảng
+        const currentOrderList = orderList.value;
+
+        // Kiểm tra xem món ăn đã tồn tại trong danh sách đặt hàng chưa
+        const existingItemIndex = currentOrderList.findIndex((item) => item.id == food.id);
+
+        if (existingItemIndex == -1) {
+        // Nếu món ăn chưa tồn tại trong danh sách, thêm vào danh sách với số lượng mặc định là 1
+        currentOrderList.push({ ...food, quantity: 1 });
+        } else {
+        // Nếu món ăn đã tồn tại trong danh sách, tăng số lượng lên 1
+        currentOrderList[existingItemIndex].quantity++;
+        }
+
+        // Lưu lại giá trị vào orderList (nếu bạn muốn)
+        orderList.value = currentOrderList;
+    };
+
+    const removeFromOrderList = (index) => {
+        orderList.value.splice(index, 1);
+        };
+
+    onMounted(() => {
+        detailTable(),
+        listFoods()
+    });
 
 </script>

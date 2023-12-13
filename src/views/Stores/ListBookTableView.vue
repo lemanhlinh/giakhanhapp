@@ -28,27 +28,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Trương Đình Toàn</td>
-                        <td>0978219820</td>
-                        <td>11:30 ngày 22/5/2023</td>
-                        <td>1961</td>
+                    <tr v-if="listOrder" v-for="(item, key) in listOrder" :key="key">
+                        <td>{{ key }}</td>
+                        <td>{{ item.full_name }}</td>
+                        <td>{{ item.phone }}</td>
+                        <td>{{ item.book_hour }} ngày {{ item.book_time }}</td>
                         <td>
-                            <p class="flex items-center justify-center">
-                                <IconDeleteBookNone class="mr-1.5" />Xóa
-                            </p>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" value="" class="sr-only peer" @click="handleClickChangeCome(item.id)" :checked="item.is_come == 1">
+                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-red-600"></div>
+                            </label>
                         </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Trương Đình Toàn</td>
-                        <td>0978219820</td>
-                        <td>11:30 ngày 22/5/2023</td>
-                        <td>1961</td>
                         <td>
                             <p class="flex items-center justify-center">
-                                <IconDeleteBook class="mr-1.5" />Xóa
+                                <IconDeleteBookNone class="mr-1.5" v-if="!isHovered" @mouseover="isHovered = true" />
+                                <IconDeleteBook class="mr-1.5" v-else @mouseout="isHovered = false" />
+                                Xóa
                             </p>
                         </td>
                     </tr>
@@ -148,8 +143,48 @@
   import IconDeleteBook from '../../components/icons/IconDeleteBook.vue'
   import IconDeleteBookNone from '../../components/icons/IconDeleteBookNone.vue'
   import AppLink from '../../components/AppLink.vue'
-
-  import { useRoute } from 'vue-router';
+  import { ref, onMounted } from 'vue'
+  import { post } from '../../services/api'
+  import { useRoute,useRouter } from 'vue-router'
 
 const { storeId, tableId } = useRoute().params;
+
+    const listOrder = ref([]);
+    const isHovered = ref(false)
+    const router = useRouter();
+
+    const fetchTableData = async () => {
+        try {
+            const data = {
+                store_id: storeId,
+                table_id: tableId,
+                status: 2,
+            }
+            const response = await post(`/danh-sach-dat-ban`, data);
+            listOrder.value = response.data; 
+        } catch (error) {
+            console.error('Error fetching table data:', error);
+        }
+    };
+
+    const handleClickChangeCome = async (id) => {
+        try {
+            const data = {
+                store_id: storeId,
+                table_id: tableId,
+                status: 3,
+                book_id: id
+            }
+            const response = await post(`/khach-den`, data);
+            if(response.data){
+                router.push({ name: 'tableDetail', params: {storeId,tableId} });
+            }
+        } catch (error) {
+            console.error('Error fetching table data:', error);
+        }
+    };
+
+    onMounted(() => {
+        fetchTableData();
+    });
 </script>

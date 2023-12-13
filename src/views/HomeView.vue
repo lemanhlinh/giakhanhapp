@@ -11,7 +11,7 @@
             </AppLink>
           </div>
           <div class="flex justify-between show-detail-store">
-            <p class="flex items-center"><IconWrapper class="mr-1.5" /><span>8/22</span> bàn đang dùng</p>
+            <p class="flex items-center"><IconWrapper class="mr-1.5" /><span>{{ store.total_use }}/{{ store.store_floor_desk.length }}</span> bàn đang dùng</p>
             <AppLink
                 name="listTable"
                 :params="{id: store.id}"
