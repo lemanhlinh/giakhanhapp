@@ -37,8 +37,8 @@
             <div class="grid grid-cols-2 gap-10">
                 <div class="bg-order list-ordered">
                     <div class="flex items-center title-menu"><IconOrder class=" mr-2" />Thực đơn dùng</div>
-                    <p class="time-into-table">
-                        <b>Bắt đầu:</b> 11:30 ngày 22/5/2023
+                    <p class="time-into-table" v-if="dataTable.book_table">
+                        <b>Bắt đầu:</b> {{ dataTable.book_table[0].book_hour }} ngày {{ dataTable.book_table[0].book_time }}
                     </p>
                     <ul class="list-order">
                         <li
@@ -48,35 +48,17 @@
                         >
                             <div class="flex items-center left-food">
                                 <div class="image-food mr-2">
-                                    <img src="https://launamgiakhanh.vn/storage/upload_image/images/Rectangle 1 (2).jpg" alt="" class="object-contain">
+                                    <img :src="`${URL_IMAGE}${orderItem.image}`" alt="" class="object-contain">
                                 </div>
                                 <div class="name-price">
                                     <p>{{  orderItem.title }}</p>
-                                    <p>Đơn giá: 145.000đ</p>
+                                    <p>Đơn giá: {{ orderItem?.price }}đ</p>
                                 </div>
                             </div>
                             <div class="flex items-center right-food">
                                 <span>SL</span>
                                 <input type="text" v-model="orderItem.quantity" class="input-ordered">
                                 <a href="" @click.prevent="removeFromOrderList(index)">
-                                    <IconDeleteFood />
-                                </a>
-                            </div>
-                        </li>
-                        <li class="flex justify-between items-center item-order">
-                            <div class="flex items-center left-food">
-                                <div class="image-food mr-2">
-                                    <img src="https://launamgiakhanh.vn/storage/upload_image/images/Rectangle 1 (2).jpg" alt="" class="object-contain">
-                                </div>
-                                <div class="name-price">
-                                    <p>Canh đặc biệt</p>
-                                    <p>Đơn giá: 145.000đ</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center right-food">
-                                <span>SL</span>
-                                <input type="text" value="1" class="input-ordered">
-                                <a href="">
                                     <IconDeleteFood />
                                 </a>
                             </div>
@@ -106,7 +88,7 @@
                                 <div class="image-food mr-2">
                                     <IconAddMoreFood/>
                                 </div>
-                                <div class="name-price"  @click="addToOrderList(food)">
+                                <div class="name-price"  @click="addToOrderList(food, index)">
                                     <p>{{ food?.title }}</p>
                                     <p>Đơn giá: {{ food?.price }}đ</p>
                                 </div>
@@ -115,7 +97,7 @@
                                 <a href="" class="mr-2" @click.prevent="decreaseQuantity(index)">
                                     <IconMinusFood />
                                 </a>
-                                <input type="text" v-model="food.quantity" class="input-ordered">
+                                <input type="text" v-model="food.quantity" class="input-quantity">
                                 <a href="" @click.prevent="increaseQuantity(index)">
                                     <IconPlusFood />
                                 </a>
@@ -221,7 +203,7 @@
                         line-height: 140%; /* 21px */
                         margin-right: 10px;
                     }
-                    .input-ordered{
+                    .input-ordered,.input-quantity{
                         width: 48px;
                         height: 38px;
                         flex-shrink: 0;
@@ -264,7 +246,7 @@
   import IconTableNullImage from '../../components/icons/IconTableNullImage.vue'
   import AppLink from '../../components/AppLink.vue'
 
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, watchEffect } from 'vue';
     import { get, post } from '../../services/api';
     import { useRoute, useRouter } from 'vue-router';
     const router = useRouter();
@@ -274,6 +256,7 @@
     const listFood = ref([]);
     const dataTable = ref([]);
     const orderList = ref([]);
+    const URL_IMAGE = 'http://giakhanh.local';
 
     const detailTable = async () => {
         try {
@@ -319,28 +302,52 @@
         listFood.value[index].quantity++;
     };
 
-    const addToOrderList = (food) => {
-        // Truy cập giá trị thực của ref để đảm bảo là một mảng
+    const addToOrderList = async (food, index ) => {
         const currentOrderList = orderList.value;
+    
+        const quantityToAdd = listFood.value[index].quantity;
 
         // Kiểm tra xem món ăn đã tồn tại trong danh sách đặt hàng chưa
         const existingItemIndex = currentOrderList.findIndex((item) => item.id == food.id);
 
         if (existingItemIndex == -1) {
-        // Nếu món ăn chưa tồn tại trong danh sách, thêm vào danh sách với số lượng mặc định là 1
-        currentOrderList.push({ ...food, quantity: 1 });
+            currentOrderList.push({ ...food, quantity: quantityToAdd });
         } else {
-        // Nếu món ăn đã tồn tại trong danh sách, tăng số lượng lên 1
-        currentOrderList[existingItemIndex].quantity++;
+            currentOrderList[existingItemIndex].quantity = parseInt(currentOrderList[existingItemIndex].quantity) + parseInt(quantityToAdd);
         }
-
-        // Lưu lại giá trị vào orderList (nếu bạn muốn)
         orderList.value = currentOrderList;
+        const data = {
+            store_id: storeId,
+            table_id: tableId,
+            book_table_id: dataTable.value.id,
+            order_list: orderList.value
+        }
+        const resp = await post(`/them-mon-dang-dung`, data);
+    };
+
+    const listFoodUse = async () => {
+        try {
+            const data = {
+                store_id: storeId,
+                table_id: tableId,
+                book_table_id: dataTable.value.id,
+            }
+            const response = await post(`/danh-sach-mon-dang-dung`, data);
+            if(response.data){
+                orderList.value = response.data.map((food) => ({ ...food }));
+            }
+        } catch (error) {
+            console.error('Error fetching table data:', error);
+        }
     };
 
     const removeFromOrderList = (index) => {
         orderList.value.splice(index, 1);
-        };
+    };
+
+    watchEffect(() => {
+        listFoodUse();
+    });
 
     onMounted(() => {
         detailTable(),
