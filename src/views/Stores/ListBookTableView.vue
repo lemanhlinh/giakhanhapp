@@ -4,13 +4,13 @@
         <div class="flex justify-between items-start menu-table">
             <ul class="flex items-center">
                 <li>
-                    <AppLink name="tableDetail" :params="{storeId: storeId, tableId: tableId}" >Bàn đang sử dụng</AppLink>
+                    <AppLink name="tableDetail" :params="{storeId: storeId, floorId: floorId, tableId: tableId}" >Bàn đang sử dụng</AppLink>
                 </li>
                 <li>
                     <AppLink name="listBookTable" class="active">Bàn đặt trước</AppLink>
                 </li>
                 <li>
-                    <AppLink name="historyBook" >Lịch sử đặt bàn</AppLink>
+                    <AppLink name="historyBook" :params="{storeId: storeId, floorId: floorId, tableId: tableId}" >Lịch sử đặt bàn</AppLink>
                 </li>
             </ul>
         <a href="" class="flex justify-between back-to-list-table"><IconBackTable class="mr-1.5" />Quay lại danh sách đặt bàn</a>
@@ -147,7 +147,7 @@
   import { post } from '../../services/api'
   import { useRoute,useRouter } from 'vue-router'
 
-const { storeId, tableId } = useRoute().params;
+const { storeId, floorId, tableId } = useRoute().params;
 
     const listOrder = ref([]);
     const isHovered = ref(false)
@@ -172,11 +172,13 @@ const { storeId, tableId } = useRoute().params;
             const data = {
                 store_id: storeId,
                 table_id: tableId,
+                floor_id: floorId,
                 status: 3,
-                book_id: id
+                customer_id: id
             }
             const response = await post(`/khach-den`, data);
             if(response.data){
+                alert(response.data.message);
                 router.push({ name: 'tableDetail', params: {storeId,tableId} });
             }
         } catch (error) {

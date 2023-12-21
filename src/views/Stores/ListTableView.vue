@@ -7,43 +7,43 @@
             <div class="box-floor" v-if="storeTable" v-for="(floor, index) in storeTable" :key="index">
                 <h2 class="title-floor text-center">{{  floor.name }}</h2>
                 <div class="grid grid-cols-12 gap-10 list-table">
-                    <div class="item-table" v-if="floor.floor_desk" v-for="(table, index) in floor.floor_desk" :key="index" :class="{'table-null': table.status == 1, 'table-book': table.status == 2, 'col-span-6': table.type == 1, 'col-span-4': table.type == 0}" >
+                    <div class="item-table" v-if="floor.floor_desk" v-for="(table, index) in floor.floor_desk" :key="index" :class="{'table-null': table.check_use == 1, 'table-book': table.check_use == 2, 'col-span-6': table.type == 1, 'col-span-4': table.type == 0}" >
                         <div :class="{'flex': table.type == 1}">
                             <IconTableVip v-if="table.type == 1" class=" mr-5" />
                             <div class="w-full">
                                 <div class="name-table">
                                     <AppLink
-                                        :name="table.status === 2 ? 'listBookTable' : 'tableDetail'"
-                                        :params="{storeId: id, tableId: table.id}"
+                                        :name="table.check_use === 2 ? 'listBookTable' : 'tableDetail'"
+                                        :params="{storeId: id, floorId: floor.id ,tableId: table.id}"
                                         class="flex items-center"
                                     >
-                                    <IconTableNull v-if="table.status == 1" class=" mr-2" />
-                                    <IconTableBook v-else-if="table.status == 2" class=" mr-2" />
+                                    <IconTableNull v-if="table.check_use == 1" class=" mr-2" />
+                                    <IconTableBook v-else-if="table.check_use == 2" class=" mr-2" />
                                     <IconOrder v-else class="mr-2" />
                                     {{ table.name }}: 
-                                    <span v-if="table.status == 1" class="ml-2" >Đang trống</span>
-                                    <span v-else-if="table.status == 2" class="ml-2">Đã có khách đặt</span>
+                                    <span v-if="table.check_use == 1" class="ml-2" >Đang trống</span>
+                                    <span v-else-if="table.check_use == 2" class="ml-2">Đã có khách đặt</span>
                                     <span v-else class="ml-2">Đã có khách ngồi</span>
                                     </AppLink>
                                 </div>
                                 <div class="flex justify-between items-center show-detail-table">
-                                    <p class="flex flex-col" v-if="table.status == 1">
+                                    <p class="flex flex-col" v-if="table.check_use == 1">
                                         <span>Hiện chưa có khách đặt bàn</span>
                                     </p>
-                                    <p class="flex flex-col" v-else-if="table.status == 2" v-if="table.book_table[0]">
-                                        <span>{{ table.book_table[0].full_name }}</span>
-                                        <span>Đến lúc {{ table.book_table[0].book_hour }} ngày {{ table.book_table[0].book_time }}</span>
+                                    <p class="flex flex-col" v-else-if="table.check_use == 2" v-if="table.store_customer[0]">
+                                        <span>{{ table.store_customer[0].full_name }}</span>
+                                        <span>Đến lúc {{ table.store_customer[0].book_hour }} ngày {{ table.store_customer[0].book_time }}</span>
                                     </p>
-                                    <p class="flex flex-col" v-else v-if="table.book_table[0]">
-                                        <span>{{ table.book_table[0].full_name }}</span>
-                                        <span>Đến lúc {{ table.book_table[0].book_hour }} ngày {{ table.book_table[0].book_time }}</span>
+                                    <p class="flex flex-col" v-else v-if="table.store_customer[0]">
+                                        <span>{{ table.store_customer[0].full_name }}</span>
+                                        <span>Đến lúc {{ table.store_customer[0].book_hour }} ngày {{ table.store_customer[0].book_time }}</span>
                                     </p>
                                     <AppLink
-                                        :name="table.status === 2 ? 'listBookTable' : 'tableDetail'"
-                                        :params="{storeId: id, tableId: table.id}"
+                                        :name="table.check_use == 2 ? 'listBookTable' : 'tableDetail'"
+                                        :params="{storeId: id, floorId: floor.id  ,tableId: table.id}"
                                         class="flex items-center detail-store"
-                                        >Chi tiết <IconArrowRightWhite v-if="table.status == 1" />
-                                        <IconArrowRightBrown v-else-if="table.status == 2" />
+                                        >Chi tiết <IconArrowRightWhite v-if="table.check_use == 1" />
+                                        <IconArrowRightBrown v-else-if="table.check_use == 2" />
                                         <IconArrowRightBrown v-else />
                                     </AppLink>
                                 </div>

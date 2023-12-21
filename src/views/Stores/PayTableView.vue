@@ -19,30 +19,32 @@
             <div class="bg-order list-ordered">
                 <div class="flex items-center title-form-pay">Thanh toán bàn B2.1</div>
                 <div class="form-info-customer">
-                    <form action="">
+                    <form ref="formRef"
+                        aria-label="Payment table form"
+                        @submit.prevent="handlePayment">
                         <div class="grid grid-cols-5 mb-5">
                             <label for="" class="flex items-center col-span-2">Bắt đầu</label>
-                            <span class="text-right col-span-3">11:30 ngày 22/5/2023</span>
+                            <span class="text-right col-span-3" v-if="dataTable.store_customer_use">{{ dataTable.store_customer_use.book_hour }} ngày {{ dataTable.store_customer_use.book_time }}</span>
                         </div>
                         <div class="grid grid-cols-5 mb-5">
                             <label for="" class="flex items-center col-span-2">Số tiền</label>
-                            <span class="text-right col-span-3"><b>1.126000đ</b></span>
+                            <span class="text-right col-span-3"><b>{{ totalPrice }}đ</b></span>
                         </div>
                         <div class="grid grid-cols-5 mb-5">
                             <label for="" class="flex items-center col-span-2">Giảm giá</label>
-                            <input type="text" class="text-right col-span-3">
+                            <input type="text" class="text-right col-span-3" v-model="voucher">
                         </div>
                         <div class="grid grid-cols-5 mb-5">
                             <label for="" class="flex items-center col-span-2">Số tiền thanh toán</label>
-                            <span class="text-right col-span-3 total-price-pay">1.126000đ</span>
+                            <span class="text-right col-span-3 total-price-pay">{{ totalPrice }}đ</span>
                         </div>
                         <div class="grid grid-cols-5 mb-5">
                             <label for="" class="flex items-center col-span-2">Tên khách</label>
-                            <input type="text" class="text-right col-span-3">
+                            <input type="text" class="text-right col-span-3" v-model="name">
                         </div>
                         <div class="grid grid-cols-5 mb-5">
                             <label for="" class="flex items-center col-span-2">Số điện thoại</label>
-                            <input type="text" class="text-right col-span-3">
+                            <input type="text" class="text-right col-span-3" v-model="phone">
                         </div>
                         <div class="grid grid-cols-5 mb-5">
                             <div class="col-span-2"></div>
@@ -57,88 +59,18 @@
             <div class="bg-order list-order-more">
                 <div class="flex items-center title-menu">Thực đơn dùng:</div>
                 <ul class="list-order">
-                    <li class="flex justify-between items-center item-order">
+                    <li class="flex justify-between items-center item-order" v-for="(orderItem, index) in orderList" :key="index">
                         <div class="flex items-center left-food">
                             <div class="image-food mr-2">
-                                <img src="https://launamgiakhanh.vn/storage/upload_image/images/Rectangle 1 (2).jpg" alt="" class="object-contain">
+                                <img :src="`${URL_IMAGE}${orderItem.image}`" alt="" class="object-contain">
                             </div>
                             <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
+                                <p>{{ orderItem.title }}</p>
+                                <p>Đơn giá: {{ orderItem.price }}đ</p>
                             </div>
                         </div>
                         <div class="flex items-center right-food">
-                            <span>Số lượng: 1</span>
-                        </div>
-                    </li>
-                    <li class="flex justify-between items-center item-order">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <img src="https://launamgiakhanh.vn/storage/upload_image/images/Rectangle 1 (2).jpg" alt="" class="object-contain">
-                            </div>
-                            <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <span>Số lượng: 1</span>
-                        </div>
-                    </li>
-                    <li class="flex justify-between items-center item-order">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <img src="https://launamgiakhanh.vn/storage/upload_image/images/Rectangle 1 (2).jpg" alt="" class="object-contain">
-                            </div>
-                            <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <span>Số lượng: 1</span>
-                        </div>
-                    </li>
-                    <li class="flex justify-between items-center item-order">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <img src="https://launamgiakhanh.vn/storage/upload_image/images/Rectangle 1 (2).jpg" alt="" class="object-contain">
-                            </div>
-                            <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <span>Số lượng: 1</span>
-                        </div>
-                    </li>
-                    <li class="flex justify-between items-center item-order">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <img src="https://launamgiakhanh.vn/storage/upload_image/images/Rectangle 1 (2).jpg" alt="" class="object-contain">
-                            </div>
-                            <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <span>Số lượng: 1</span>
-                        </div>
-                    </li>
-                    <li class="flex justify-between items-center item-order">
-                        <div class="flex items-center left-food">
-                            <div class="image-food mr-2">
-                                <img src="https://launamgiakhanh.vn/storage/upload_image/images/Rectangle 1 (2).jpg" alt="" class="object-contain">
-                            </div>
-                            <div class="name-price">
-                                <p>Canh đặc biệt</p>
-                                <p>Đơn giá: 145.000đ</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center right-food">
-                            <span>Số lượng: 1</span>
+                            <span>Số lượng: {{ orderItem.quantity }}</span>
                         </div>
                     </li>
                 </ul>
@@ -301,4 +233,83 @@
   import IconBackTable from '../../components/icons/IconBackTable.vue'
   import IconArrowRightWhite from '../../components/icons/IconArrowRightWhite.vue'
   import AppLink from '../../components/AppLink.vue'
+
+  import { ref, onMounted, watchEffect } from 'vue';
+    import { get, post } from '../../services/api';
+    import { useRoute, useRouter } from 'vue-router';
+    const router = useRouter();
+
+    const { storeId, tableId, floorId } = useRoute().params;
+
+    const dataTable = ref([]);
+    const orderList = ref([]);
+    const totalPrice = ref(Number);
+    const URL_IMAGE = 'http://giakhanh.local';
+
+    const phone = ref('');
+    const voucher = ref('');
+    const name = ref('');
+    const total_price = ref('');
+
+    const detailTable = async () => {
+        try {
+            const response = await get(`/chi-tiet-ban/${storeId}/${floorId}/${tableId}`);
+            dataTable.value = response.data.result;
+            phone.value = dataTable.value.store_customer_use.phone;
+            name.value = dataTable.value.store_customer_use.full_name;
+            if(dataTable.value.store_customer_use){
+                let products = dataTable.value.store_customer_use.store_desk_order;
+                orderList.value = products;
+                totalPrice.value = response.data.total_price;
+            }
+        } catch (error) {
+            console.error('Error fetching table data:', error);
+        }
+    };
+
+//   const listFoodUse = async () => {
+//         try {
+//             const data = {
+//                 store_id: storeId,
+//                 table_id: tableId,
+//                 book_table_id: dataTable.value.id,
+//             }
+//             const response = await post(`/danh-sach-mon-dang-dung`, data);
+//             if(response.data){
+//                 orderList.value = response.data.products.map((food) => ({ ...food }));
+//                 totalPrice.value = response.data.total_price;
+//             }
+//         } catch (error) {
+//             console.error('Error fetching table data:', error);
+//         }
+//     };
+
+    // watchEffect(() => {
+    //     listFoodUse();
+    // });
+
+    onMounted(() => {
+        detailTable()
+    });
+
+    const handlePayment = async () => {
+        try {
+            const data = {
+                full_name: name.value,
+                phone: phone.value,
+                voucher: voucher.value,
+                store_id: storeId,
+                table_id: tableId,
+                customer_id: dataTable.value.store_customer_use.id,
+                total_price: totalPrice.value,
+            }
+            const response = await post(`/thanh-toan`,data);
+            if(response.data){
+                router.push({ name: 'listBookTable' });
+            }
+        } catch (error) {
+            // alert('Sai tên đăng nhập hoặc mật khẩu');
+            console.error('Login error:', error);
+        }
+    };
 </script>

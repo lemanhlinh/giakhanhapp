@@ -32,31 +32,31 @@ export const routes: RouteRecordRaw[] = [
       component: () => import('../views/Stores/ListTableView.vue')
     },
     {
-      path: '/table-detail/:storeId/:tableId',
+      path: '/table-detail/:storeId/:floorId/:tableId',
       name: 'tableDetail',
       meta: { requiresAuth: true },
       component: () => import('../views/Stores/DetailTableView.vue')
     },
     {
-      path: '/thanh-toan',
+      path: '/thanh-toan/:storeId/:floorId/:tableId',
       name: 'payTable',
       meta: { requiresAuth: true },
       component: () => import('../views/Stores/PayTableView.vue')
     },
     {
-      path: '/danh-sach-dat-ban-truoc/:storeId/:tableId',
+      path: '/danh-sach-dat-ban-truoc/:storeId/:floorId/:tableId',
       name: 'listBookTable',
       meta: { requiresAuth: true },
       component: () => import('../views/Stores/ListBookTableView.vue')
     },
     {
-      path: '/lich-su-dat-ban/:storeId/:tableId',
+      path: '/lich-su-dat-ban/:storeId/:floorId/:tableId',
       name: 'historyBook',
       meta: { requiresAuth: true },
       component: () => import('../views/Stores/HistoryBookTable.vue')
     },
     {
-      path: '/dat-ban-cho-khach/:storeId/:tableId',
+      path: '/dat-ban-cho-khach/:storeId/:floorId/:tableId',
       name: 'bookTable',
       meta: { requiresAuth: true },
       component: () => import('../views/Stores/FormBookTable.vue')

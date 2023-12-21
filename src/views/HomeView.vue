@@ -70,14 +70,23 @@
   import AppLink from '../components/AppLink.vue'
 
   import { ref, onMounted } from 'vue';
-  import { get } from '../services/api';
+  import { get, post } from '../services/api';
 
+  const userInfoString = localStorage.getItem('userInfo'); 
   const tableData = ref([]);
+
+  
 
   const fetchTableData = async () => {
     try {
-      const response = await get('/danh-sach-cua-hang');
-      tableData.value = response.data; 
+      if (userInfoString) {
+          const userInfo = JSON.parse(userInfoString);
+          const data = {
+              stores_id: userInfo._value.stores
+          }
+          const response = await post('/danh-sach-cua-hang',data);
+          tableData.value = response.data; 
+      }
     } catch (error) {
       console.error('Error fetching table data:', error);
     }

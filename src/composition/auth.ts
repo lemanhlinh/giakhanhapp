@@ -13,7 +13,7 @@ export const login = async (credentials) => {
     const response = await post('/login', credentials);
     setToken(response.data.token);
     isAuthenticated.value = true;
-    setUserInfo(response.data.email, response.data.name);
+    setUserInfo(response.data.email, response.data.name, response.data.stores);
     localStorage.setItem('token', response.data.access_token);
   } catch (error) {
     console.error('Login error:', error);

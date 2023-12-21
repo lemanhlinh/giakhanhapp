@@ -4,13 +4,13 @@
         <div class="flex justify-between items-start menu-table">
             <ul class="flex items-center">
                 <li>
-                    <AppLink name="tableDetail" :params="{storeId: storeId, tableId: tableId}" >Bàn đang sử dụng</AppLink>
+                    <AppLink name="tableDetail" :params="{storeId: storeId,floorId:floorId, tableId: tableId}" >Bàn đang sử dụng</AppLink>
                 </li>
                 <li>
                     <AppLink name="listBookTable">Bàn đặt trước</AppLink>
                 </li>
                 <li>
-                    <AppLink name="historyBook"  class="active">Lịch sử đặt bàn</AppLink>
+                    <AppLink name="historyBook" class="active">Lịch sử đặt bàn</AppLink>
                 </li>
             </ul>
         <a href="" class="flex justify-between back-to-list-table"><IconBackTable class="mr-1.5" />Quay lại danh sách đặt bàn</a>
@@ -28,27 +28,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Trương Đình Toàn</td>
-                        <td>0978219820</td>
-                        <td>11:30 ngày 22/5/2023</td>
-                        <td>Canh đặc biệt (1), Ngô chiên (2), Salad nấm (1), nấm hương tươi (1), Rau cải thảo (1), Nấm thủy tinh nâu (1), nấm kim châm trắng (1), Tôm sú (1)</td>
+                    <tr v-if="listCustomerHistory" v-for="customer in listCustomerHistory" :key="customer.id">
+                        <td>{{ customer.id }}</td>
+                        <td>{{ customer.full_name }}</td>
+                        <td>{{ customer.phone }}</td>
+                        <td>{{ customer.book_hour }} ngày {{ customer.book_time }}</td>
                         <td>
-                            <p class="price-order">
-                                1.026000đ
-                            </p>
+                            <span v-if="customer.store_desk_order" v-for="food in customer.store_desk_order">
+                                {{ food.title }}({{ food.quantity }}),
+                            </span>
                         </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Trương Đình Toàn</td>
-                        <td>0978219820</td>
-                        <td>11:30 ngày 22/5/2023</td>
-                        <td>Canh đặc biệt (1), Ngô chiên (2), Salad nấm (1), nấm hương tươi (1), Rau cải thảo (1), Nấm thủy tinh nâu (1), nấm kim châm trắng (1), Tôm sú (1)</td>
                         <td>
                             <p class="price-order">
-                                1.026000đ
+                                {{ customer.total_price }}đ
                             </p>
                         </td>
                     </tr>
@@ -138,6 +130,30 @@
   import IconDeleteBookNone from '../../components/icons/IconDeleteBookNone.vue'
   import AppLink from '../../components/AppLink.vue'
   import { useRoute } from 'vue-router';
+  import { get, post } from '../../services/api';
+  import { ref, onMounted } from 'vue';
 
-const { storeId, tableId } = useRoute().params;
+    const { storeId, tableId, floorId } = useRoute().params;
+
+    const historyTable = ref([]);
+    const listCustomerHistory = ref([]);
+
+    const detailTable = async () => {
+        try {
+            const response = await get(`/lich-su-dat-ban/${storeId}/${floorId}/${tableId}`);
+            if(response.data && response.data.result){
+                historyTable.value = response.data.result;
+                if(historyTable.value && historyTable.value.store_customer_history){
+                    listCustomerHistory.value = historyTable.value.store_customer_history
+                }
+            }            
+        } catch (error) {
+            console.error('Error fetching table data:', error);
+        }
+    };
+    
+    onMounted(() => {
+        detailTable()
+    });
+
 </script>

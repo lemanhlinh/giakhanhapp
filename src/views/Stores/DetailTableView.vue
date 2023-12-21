@@ -4,7 +4,7 @@
         <div class="flex justify-between items-start menu-table">
             <ul class="flex items-center">
                 <li>
-                    <AppLink name="tableDetail" :params="{storeId: storeId, tableId: tableId}" class="active">
+                    <AppLink name="tableDetail" :params="{storeId: storeId, floorId: floorId ,tableId: tableId}" class="active">
                     Bàn đang sử dụng
                     </AppLink>
                 </li>
@@ -21,28 +21,16 @@
             </ul>
         <a href="" class="flex justify-between back-to-list-table"><IconBackTable class="mr-1.5" />Quay lại danh sách đặt bàn</a>
         </div>
-        <div v-if="dataTable.status == 1">
-            <div class="grid text-center place-content-center">
-                <IconTableNullImage />
-                Hiện tại bàn đang trống
-                <button
-                        @click="handleClickChangeStatus()"
-                        class="text-center detail-store"
-                    >
-                Sử dụng bàn <IconArrowRightWhite />
-                </button>
-            </div>
-        </div>
-        <div v-else>
+        <div v-if="dataTable.store_customer_use">
             <div class="grid grid-cols-2 gap-10">
                 <div class="bg-order list-ordered">
                     <div class="flex items-center title-menu"><IconOrder class=" mr-2" />Thực đơn dùng</div>
-                    <p class="time-into-table" v-if="dataTable.book_table">
-                        <b>Bắt đầu:</b> {{ dataTable.book_table[0].book_hour }} ngày {{ dataTable.book_table[0].book_time }}
+                    <p class="time-into-table" v-if="dataTable.store_customer_use">
+                        <b>Bắt đầu:</b> {{ dataTable.store_customer_use.book_hour }} ngày {{ dataTable.store_customer_use.book_time }}
                     </p>
                     <ul class="list-order">
                         <li
-                            class="flex justify-between items-center item-order"
+                            class="flex justify-between items-center item-order" v-if="orderList"
                             v-for="(orderItem, index) in orderList"
                             :key="index"
                         >
@@ -57,19 +45,20 @@
                             </div>
                             <div class="flex items-center right-food">
                                 <span>SL</span>
-                                <input type="text" v-model="orderItem.quantity" class="input-ordered">
-                                <a href="" @click.prevent="removeFromOrderList(index)">
+                                <input type="text" v-model="orderItem.quantity" class="input-ordered" @input="updateQuantity(orderItem)">
+                                <a href="" @click.prevent="removeFromOrderList(index, orderItem?.id)">
                                     <IconDeleteFood />
                                 </a>
                             </div>
                         </li>
                     </ul>
                     <div class="total-price">
-                        <b>Tạm tính: <span>1.126.000đ</span></b>
+                        <b>Tạm tính: <span>{{ totalPrice }}đ</span></b>
                     </div>
                     <p class="grid grid-cols-4">
                         <AppLink
                                 name="payTable"
+                                :params="{storeId: storeId, floorId: floorId, tableId: tableId}"
                                 class="flex items-center detail-store"
                             >
                         Thanh toán <IconArrowRightWhite />
@@ -105,6 +94,18 @@
                         </li>
                     </ul>
                 </div>
+            </div>
+        </div>
+        <div v-else>
+            <div class="grid text-center place-content-center">
+                <IconTableNullImage />
+                Hiện tại bàn đang trống
+                <button
+                        @click="handleClickChangeStatus()"
+                        class="text-center detail-store"
+                    >
+                Sử dụng bàn <IconArrowRightWhite />
+                </button>
             </div>
         </div>
       </div>
@@ -246,22 +247,29 @@
   import IconTableNullImage from '../../components/icons/IconTableNullImage.vue'
   import AppLink from '../../components/AppLink.vue'
 
-  import { ref, onMounted, watchEffect } from 'vue';
+  import { ref, onMounted } from 'vue';
     import { get, post } from '../../services/api';
     import { useRoute, useRouter } from 'vue-router';
     const router = useRouter();
 
-    const { storeId, tableId } = useRoute().params;
+    const { storeId, tableId, floorId } = useRoute().params;
     
     const listFood = ref([]);
     const dataTable = ref([]);
     const orderList = ref([]);
+    const totalPrice = ref(Number);
     const URL_IMAGE = 'http://giakhanh.local';
 
     const detailTable = async () => {
         try {
-            const response = await get(`/chi-tiet-ban/${storeId}/${tableId}`);
-            dataTable.value = response.data; 
+            const response = await get(`/chi-tiet-ban/${storeId}/${floorId}/${tableId}`);
+            dataTable.value = response.data.result;
+
+            if(dataTable.value.store_customer_use){
+                let products = dataTable.value.store_customer_use.store_desk_order;
+                orderList.value = products;
+                totalPrice.value = response.data.total_price;
+            }
         } catch (error) {
             console.error('Error fetching table data:', error);
         }
@@ -281,6 +289,7 @@
             const data = {
                 store_id: storeId,
                 table_id: tableId,
+                floor_id: floorId,
                 status: 3,
             }
             const response = await post(`/su-dung-ban`, data);
@@ -304,7 +313,6 @@
 
     const addToOrderList = async (food, index ) => {
         const currentOrderList = orderList.value;
-    
         const quantityToAdd = listFood.value[index].quantity;
 
         // Kiểm tra xem món ăn đã tồn tại trong danh sách đặt hàng chưa
@@ -319,35 +327,39 @@
         const data = {
             store_id: storeId,
             table_id: tableId,
-            book_table_id: dataTable.value.id,
+            customer_id: dataTable.value.store_customer_use.id,
             order_list: orderList.value
         }
-        const resp = await post(`/them-mon-dang-dung`, data);
+        const response = await post(`/them-mon-dang-dung`, data);
+        totalPrice.value = response.data.total_price;
     };
 
-    const listFoodUse = async () => {
+    const removeFromOrderList = async (index, product_id) => {
+        orderList.value.splice(index, 1);
+        const data = {
+            store_id: storeId,
+            table_id: tableId,
+            customer_id: dataTable.value.store_customer_use.id,
+            product_id: product_id
+        }
+        const response = await post(`/xoa-mon-dang-dung`, data);
+        totalPrice.value = response.data.total_price;
+    };
+
+    const updateQuantity = async (orderItem) => {
         try {
             const data = {
                 store_id: storeId,
                 table_id: tableId,
-                book_table_id: dataTable.value.id,
+                customer_id: dataTable.value.store_customer_use.id,
+                product:orderItem
             }
-            const response = await post(`/danh-sach-mon-dang-dung`, data);
-            if(response.data){
-                orderList.value = response.data.map((food) => ({ ...food }));
-            }
+            const response = await post(`/update-mon-dang-dung`, data);
+            totalPrice.value = response.data.total_price;
         } catch (error) {
-            console.error('Error fetching table data:', error);
+            console.error('Error updating quantity:', error);
         }
     };
-
-    const removeFromOrderList = (index) => {
-        orderList.value.splice(index, 1);
-    };
-
-    watchEffect(() => {
-        listFoodUse();
-    });
 
     onMounted(() => {
         detailTable(),
