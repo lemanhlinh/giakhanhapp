@@ -7,6 +7,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import { router } from './router'
 
+// import SocketClient from 'socket.io-client'
 // import Echo from "laravel-echo"
 
 // import { io } from 'socket.io-client'
@@ -29,6 +30,8 @@ import { router } from './router'
 const app = createApp(App)
 
 // const socket = io('http://localhost:6001'); 
+
+// window.io = SocketClient;
 
 // window.Echo = new Echo({
 //     broadcaster: 'socket.io',

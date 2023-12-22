@@ -131,6 +131,7 @@
     
     const storeTable = ref([]);
     const messages = ref([]);
+    const eventData = ref(null);
 
     const { id } = useRoute().params;
 
@@ -145,11 +146,24 @@
 
     const testTableData = async () => {
         try {
-            window.Echo.channel('laravel_database_chatroom')
-                .listen('App\\Events\\MessagePosted', (data) => {
-                    // Xử lý dữ liệu nhận được từ Laravel
-                    messages.value.push(data.message);
-                });
+            console.log('onMounted is called');
+            const channel = window.Echo.channel('laravel_database_chatroom');
+            console.log('Channel:', channel);
+
+            channel.listen('MessagePosted', (event) => {
+                console.log('Event received:', event);
+                eventData.value = event;
+                // Handle the event data here
+            });
+
+            // window.Echo.channel('laravel_database_chatroom')
+            //     .listen('MessagePosted', (data) => {
+            //         // Xử lý dữ liệu nhận được từ Laravel
+            //         // messages.value.push(data.message);
+            //         console.log('Event received:', data);
+            //         eventData.value = data
+            //     });
+                
         } catch (error) {
             console.error('Error fetching table data:', error);
         }
