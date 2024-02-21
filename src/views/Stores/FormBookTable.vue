@@ -14,7 +14,9 @@
                     <AppLink name="historyBook" >Lịch sử đặt bàn</AppLink>
                 </li>
             </ul>
-        <a href="" class="flex justify-between back-to-list-table"><IconBackTable class="mr-1.5" />Quay lại danh sách đặt bàn</a>
+            <AppLink name="listTable" :params="{id: storeId}" class="flex justify-between back-to-list-table">
+                <IconBackTable class="mr-1.5" />Quay lại danh sách bàn
+            </AppLink>
         </div>
         <div class="table-book-table">
             <form ref="formRef"

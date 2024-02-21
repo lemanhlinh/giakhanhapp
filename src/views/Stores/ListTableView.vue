@@ -13,7 +13,7 @@
                             <div class="w-full">
                                 <div class="name-table">
                                     <AppLink
-                                        :name="table.check_use === 2 ? 'listBookTable' : 'tableDetail'"
+                                        :name="table.check_use == 2 ? 'listBookTable' : 'tableDetail'"
                                         :params="{storeId: id, floorId: floor.id ,tableId: table.id}"
                                         class="flex items-center"
                                     >
@@ -129,7 +129,22 @@
     import { useRoute } from 'vue-router';
     import { get } from '../../services/api';
     
-    const storeTable = ref([]);
+    const storeTable = ref<Array<{
+        id: string,
+        name: string,
+         floor_desk: [
+            {
+                check_use: number,
+                name: string,
+                type: number,
+                id: string,
+                store_customer: [{
+                    book_hour: string,
+                    book_time: string,
+                    full_name: string
+                }]
+            }
+        ]}>>([]);
     const messages = ref([]);
     const eventData = ref(null);
 
@@ -146,15 +161,15 @@
 
     const testTableData = async () => {
         try {
-            console.log('onMounted is called');
-            const channel = window.Echo.channel('laravel_database_chatroom');
-            console.log('Channel:', channel);
+            // console.log('onMounted is called');
+            // const channel = window.Echo.channel('laravel_database_chatroom');
+            // console.log('Channel:', channel);
 
-            channel.listen('MessagePosted', (event) => {
-                console.log('Event received:', event);
-                eventData.value = event;
-                // Handle the event data here
-            });
+            // channel.listen('MessagePosted', (event) => {
+            //     console.log('Event received:', event);
+            //     eventData.value = event;
+            //     // Handle the event data here
+            // });
 
             // window.Echo.channel('laravel_database_chatroom')
             //     .listen('MessagePosted', (data) => {

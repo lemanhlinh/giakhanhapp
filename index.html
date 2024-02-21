@@ -9,5 +9,21 @@
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
+    <!-- <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script> -->
+    <script src="http://localhost:6001/socket.io/socket.io.js"></script>
+    <script>
+      // Enable pusher logging - don't include this in production
+      // Pusher.logToConsole = true;
+  
+      // var pusher = new Pusher('501c68189750b6521f15', {
+      //   cluster: 'ap1'
+      // });
+  
+      // var channel = pusher.subscribe('chatroom');
+      // channel.bind('.chatroom.shipped', function(data) {
+      //   console.log(data);
+      //   app.messages.push(JSON.stringify(data));
+      // });
+    </script>
   </body>
 </html>

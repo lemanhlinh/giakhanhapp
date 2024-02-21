@@ -19,7 +19,9 @@
                     </AppLink>
                 </li>
             </ul>
-        <a href="" class="flex justify-between back-to-list-table"><IconBackTable class="mr-1.5" />Quay lại danh sách đặt bàn</a>
+            <AppLink name="listTable" :params="{id: storeId}" class="flex justify-between back-to-list-table">
+                <IconBackTable class="mr-1.5" />Quay lại danh sách bàn
+            </AppLink>
         </div>
         <div v-if="dataTable.store_customer_use">
             <div class="grid grid-cols-2 gap-10">
@@ -40,20 +42,20 @@
                                 </div>
                                 <div class="name-price">
                                     <p>{{  orderItem.title }}</p>
-                                    <p>Đơn giá: {{ orderItem?.price }}đ</p>
+                                    <p>Đơn giá: {{ formatNumber(orderItem?.price) }}đ</p>
                                 </div>
                             </div>
                             <div class="flex items-center right-food">
                                 <span>SL</span>
-                                <input type="text" v-model="orderItem.quantity" class="input-ordered" @input="updateQuantity(orderItem)">
-                                <a href="" @click.prevent="removeFromOrderList(index, orderItem?.id)">
+                                <input type="text" min="1" v-model="orderItem.quantity" class="input-ordered" @input="updateQuantity(orderItem)">
+                                <a href="" @click.prevent="removeFromOrderList(index, orderItem?.product_id)">
                                     <IconDeleteFood />
                                 </a>
                             </div>
                         </li>
                     </ul>
                     <div class="total-price">
-                        <b>Tạm tính: <span>{{ totalPrice }}đ</span></b>
+                        <b>Tạm tính: <span>{{ formatNumber(totalPrice) }}đ</span></b>
                     </div>
                     <p class="grid grid-cols-4">
                         <AppLink
@@ -68,28 +70,35 @@
                 <div class="bg-order list-order-more">
                     <div class="flex items-center title-menu"><IconAddFood class=" mr-2" />Thêm món</div>
                     <div class="relative mb-4 group-search-food">
-                        <input type="text" placeholder="Tìm món" class="search-food-now">
+                        <input type="text" placeholder="Tìm món" v-model="searchTerm" class="search-food-now">
                         <IconSearch class="absolute right-1.5 top-2" />
                     </div>
                     <ul class="list-order">
-                        <li class="flex justify-between items-center item-order" v-if="listFood" v-for="(food, index) in listFood" :key="index">
+                        <li class="flex justify-between items-center item-order" v-if="filteredDishes" v-for="(food, index) in filteredDishes" :key="index">
                             <div class="flex items-center left-food">
                                 <div class="image-food mr-2">
                                     <IconAddMoreFood/>
                                 </div>
-                                <div class="name-price"  @click="addToOrderList(food, index)">
+                                <div class="name-price" >
                                     <p>{{ food?.title }}</p>
-                                    <p>Đơn giá: {{ food?.price }}đ</p>
+                                    <p>Đơn giá: {{ food.price?formatNumber(food.price):0 }}đ</p>
+                                </div>
+                                <div class="name-price hidden"  @click="addToOrderList(food, index)">
+                                    <p>{{ food?.title }}</p>
+                                    <p>Đơn giá: {{ food.price?formatNumber(food.price):0 }}đ</p>
                                 </div>
                             </div>
                             <div class="flex items-center right-food">
-                                <a href="" class="mr-2" @click.prevent="decreaseQuantity(index)">
+                                <a href="" class="mr-2 hidden" @click.prevent="decreaseQuantity(index)">
                                     <IconMinusFood />
                                 </a>
-                                <input type="text" v-model="food.quantity" class="input-quantity">
-                                <a href="" @click.prevent="increaseQuantity(index)">
+                                <input type="text" v-model="food.quantity" class="input-quantity hidden">
+                                <a href="" @click.prevent="increaseQuantity(index)" class="hidden">
                                     <IconPlusFood />
                                 </a>
+                                <div class="add-order"  @click="addToOrderList(food, index)">
+                                    <IconPlusFood />
+                                </div>
                             </div>
                         </li>
                     </ul>
@@ -99,7 +108,7 @@
         <div v-else>
             <div class="grid text-center place-content-center">
                 <IconTableNullImage />
-                Hiện tại bàn đang trống
+                <p class="text-h">Hiện tại bàn đang trống</p>
                 <button
                         @click="handleClickChangeStatus()"
                         class="text-center detail-store"
@@ -224,12 +233,33 @@
             }
         }
         .detail-store{
-        border-radius: 8px;
-        background: #E91A22;
-        padding: 9px 20px;
-        color: #fff;
-        font-family: GoogleSans-Bold;
-        font-weight: 700;
+            border-radius: 8px;
+            background: #E91A22;
+            padding: 9px 20px;
+            color: #fff;
+            font-family: GoogleSans-Bold;
+            font-weight: 700;
+        }
+    }
+    .place-content-center{
+        .text-h{
+            margin: 24px 0 12px 0;
+            font-size: 16px;
+                font-style: normal;
+                font-weight: 500;
+        }
+        .detail-store{
+            border-radius: 8px;
+            background: #E91A22;
+            padding: 9px 20px;
+            color: #fff;
+            font-family: GoogleSans-Bold;
+            font-weight: 700;
+            display: flex;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            margin: 10px 30px;
         }
     }
 }
@@ -246,19 +276,57 @@
   import IconArrowRightWhite from '../../components/icons/IconArrowRightWhite.vue'
   import IconTableNullImage from '../../components/icons/IconTableNullImage.vue'
   import AppLink from '../../components/AppLink.vue'
+  import { formatNumber } from '../../helpers';
 
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, computed } from 'vue';
     import { get, post } from '../../services/api';
     import { useRoute, useRouter } from 'vue-router';
+
+    interface Products {
+        image: string,
+        title: string,
+        price: number,
+        quantity: number,
+        id: number,
+    }
+    interface OrderProduct {
+        customer_id: number,
+        product_id: number,
+        image: string,
+        title: string,
+        price: number,
+        quantity: number
+    }
+
+    interface StoreCustomerUse {
+    id: number;
+    book_hour: string;
+    book_time: string;
+    store_desk_order: [];
+    }
+
     const router = useRouter();
 
     const { storeId, tableId, floorId } = useRoute().params;
     
-    const listFood = ref([]);
-    const dataTable = ref([]);
-    const orderList = ref([]);
-    const totalPrice = ref(Number);
-    const URL_IMAGE = 'http://giakhanh.local';
+    const listFood = ref<Array<Products>>([]);
+    const dataTable = ref({
+        store_customer_use: {
+            id: 0,
+            book_hour: '...',
+            book_time: '...',
+            store_desk_order: [] as any[], 
+        } as StoreCustomerUse,
+        });
+
+    const orderList = ref<Array<OrderProduct>>([]);
+    const totalPrice = ref(0);
+    const URL_IMAGE = import.meta.env.VITE_API_BASE_URL;
+    const searchTerm = ref('');
+
+    const filteredDishes = computed(() =>
+        listFood.value.filter(food => food.title.toLowerCase().includes(searchTerm.value.toLowerCase()))
+    );
 
     const detailTable = async () => {
         try {
@@ -277,8 +345,8 @@
 
     const listFoods = async () => {
         try {
-            const response = await get(`/danh-sach-mon`);
-            listFood.value = response.data.map((food) => ({ ...food, quantity: 1 }));
+            const response = await get(`/danh-sach-mon/${storeId}`);
+            listFood.value = response.data.map((food: Products) => ({ ...food, quantity: 1 }));
         } catch (error) {
             console.error('Error fetching table data:', error);
         }
@@ -311,17 +379,25 @@
         listFood.value[index].quantity++;
     };
 
-    const addToOrderList = async (food, index ) => {
+    const addToOrderList = async (food: Products, index:number ) => {
         const currentOrderList = orderList.value;
         const quantityToAdd = listFood.value[index].quantity;
 
         // Kiểm tra xem món ăn đã tồn tại trong danh sách đặt hàng chưa
-        const existingItemIndex = currentOrderList.findIndex((item) => item.id == food.id);
+        const existingItemIndex = currentOrderList.findIndex((item) => item.product_id == food.id);
 
+        const storeDeskOrder = {
+            customer_id: dataTable.value.store_customer_use.id,
+            product_id: food.id,
+            image: food.image,
+            title: food.title,
+            price: food.price,
+            quantity: quantityToAdd
+        }
         if (existingItemIndex == -1) {
-            currentOrderList.push({ ...food, quantity: quantityToAdd });
+            currentOrderList.push({ ...storeDeskOrder });
         } else {
-            currentOrderList[existingItemIndex].quantity = parseInt(currentOrderList[existingItemIndex].quantity) + parseInt(quantityToAdd);
+            currentOrderList[existingItemIndex].quantity = currentOrderList[existingItemIndex].quantity + quantityToAdd;
         }
         orderList.value = currentOrderList;
         const data = {
@@ -334,7 +410,7 @@
         totalPrice.value = response.data.total_price;
     };
 
-    const removeFromOrderList = async (index, product_id) => {
+    const removeFromOrderList = async (index: number, product_id: number) => {
         orderList.value.splice(index, 1);
         const data = {
             store_id: storeId,
@@ -346,7 +422,7 @@
         totalPrice.value = response.data.total_price;
     };
 
-    const updateQuantity = async (orderItem) => {
+    const updateQuantity = async (orderItem: OrderProduct) => {
         try {
             const data = {
                 store_id: storeId,
@@ -365,5 +441,27 @@
         detailTable(),
         listFoods()
     });
+
+    import Echo from "laravel-echo"
+    const echoInstance = ref<any>(null);
+
+    onMounted(() => {
+        // echoInstance.value = new Echo({
+        // broadcaster: 'socket.io',
+        // host: 'http://localhost:6001',
+        // });
+
+        // echoInstance.value.channel('laravel_database_order-food')
+        // .listen('.order.food', (data: any) => {
+        //     console.log((data));
+        //     playNotificationSound();
+
+        // });
+    });
+
+    const playNotificationSound = () => {
+        const audio = new Audio('/sounds/notification.mp3');
+        audio.play();
+    };
 
 </script>

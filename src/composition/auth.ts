@@ -6,9 +6,14 @@ const checkAuthStatus = () => {
   return localStorage.getItem('token') !== null;
 };
 
+interface Credentials {
+  email: string;
+  password: string;
+}
+
 export const isAuthenticated = ref(checkAuthStatus());
 
-export const login = async (credentials) => {
+export const login = async (credentials: Credentials) => {
   try {
     const response = await post('/login', credentials);
     setToken(response.data.token);

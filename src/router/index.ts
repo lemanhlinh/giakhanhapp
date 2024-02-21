@@ -5,13 +5,13 @@ import { isAuthenticated } from '@/composition/auth'
 
 export type AppRouteNames =
   | 'home'
-  | 'list-table'
-  | 'table-detail'
-  | 'thanh-toan'
-  | 'danh-sach-dat-ban-truoc'
-  | 'chi-tiet-them-moi-dat-ban'
+  | 'listTable'
+  | 'tableDetail'
+  | 'payTable'
+  | 'listBookTable'
+  | 'bookTable'
   | 'login'
-  | 'lich-su-dat-ban'
+  | 'historyBook'
 
 export const routes: RouteRecordRaw[] = [
     {

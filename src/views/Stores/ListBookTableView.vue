@@ -13,7 +13,9 @@
                     <AppLink name="historyBook" :params="{storeId: storeId, floorId: floorId, tableId: tableId}" >Lịch sử đặt bàn</AppLink>
                 </li>
             </ul>
-        <a href="" class="flex justify-between back-to-list-table"><IconBackTable class="mr-1.5" />Quay lại danh sách đặt bàn</a>
+            <AppLink name="listTable" :params="{id: storeId}" class="flex justify-between back-to-list-table">
+                <IconBackTable class="mr-1.5" />Quay lại danh sách bàn
+            </AppLink>
         </div>
         <div class="table-list-book-table">
             <table class="table-auto list-customer mb-5">
@@ -149,7 +151,14 @@
 
 const { storeId, floorId, tableId } = useRoute().params;
 
-    const listOrder = ref([]);
+    const listOrder = ref<Array<{
+        phone: number,
+        full_name: string,
+        book_hour: string,
+        book_time: string,
+        is_come: number,
+        id: number
+    }>>([]);
     const isHovered = ref(false)
     const router = useRouter();
 
@@ -167,7 +176,7 @@ const { storeId, floorId, tableId } = useRoute().params;
         }
     };
 
-    const handleClickChangeCome = async (id) => {
+    const handleClickChangeCome = async (id: number) => {
         try {
             const data = {
                 store_id: storeId,

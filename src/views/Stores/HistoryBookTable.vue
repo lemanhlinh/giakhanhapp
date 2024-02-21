@@ -13,7 +13,9 @@
                     <AppLink name="historyBook" class="active">Lịch sử đặt bàn</AppLink>
                 </li>
             </ul>
-        <a href="" class="flex justify-between back-to-list-table"><IconBackTable class="mr-1.5" />Quay lại danh sách đặt bàn</a>
+            <AppLink name="listTable" :params="{id: storeId}" class="flex justify-between back-to-list-table">
+                <IconBackTable class="mr-1.5" />Quay lại danh sách bàn
+            </AppLink>
         </div>
         <div class="table-list-book-table">
             <table class="table-auto list-customer mb-5">
@@ -40,7 +42,7 @@
                         </td>
                         <td>
                             <p class="price-order">
-                                {{ customer.total_price }}đ
+                                {{ customer.total_price?formatNumber(customer.total_price):0 }}đ
                             </p>
                         </td>
                     </tr>
@@ -132,11 +134,25 @@
   import { useRoute } from 'vue-router';
   import { get, post } from '../../services/api';
   import { ref, onMounted } from 'vue';
+  import { formatNumber } from '../../helpers';
 
     const { storeId, tableId, floorId } = useRoute().params;
 
-    const historyTable = ref([]);
-    const listCustomerHistory = ref([]);
+    const historyTable = ref({
+        store_customer_history: []
+    });
+    const listCustomerHistory = ref<Array<{ 
+            id: string;
+            full_name: string;
+            phone: number;
+            book_hour: string;
+            book_time: string;
+            store_desk_order: [{
+                title: string,
+                quantity: number,
+            }];
+            total_price: number
+        }>>([]);
 
     const detailTable = async () => {
         try {

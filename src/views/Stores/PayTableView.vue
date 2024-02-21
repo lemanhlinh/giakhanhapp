@@ -13,7 +13,9 @@
                     <AppLink name="historyBook" >Lịch sử đặt bàn</AppLink>
                 </li>
             </ul>
-        <a href="" class="flex justify-between back-to-list-table"><IconBackTable class="mr-1.5" />Quay lại danh sách đặt bàn</a>
+            <AppLink name="listTable" :params="{id: storeId}" class="flex justify-between back-to-list-table">
+                <IconBackTable class="mr-1.5" />Quay lại danh sách bàn
+            </AppLink>
         </div>
         <div class="grid grid-cols-2 gap-10">
             <div class="bg-order list-ordered">
@@ -241,10 +243,28 @@
 
     const { storeId, tableId, floorId } = useRoute().params;
 
-    const dataTable = ref([]);
-    const orderList = ref([]);
+    interface StoreCustomerUse {
+        id: number;
+        book_hour: string;
+        book_time: string;
+        full_name: string;
+        phone: string;
+        store_desk_order: [];
+    }
+
+    const dataTable = ref({
+        store_customer_use: {
+            id: 0,
+            book_hour: '...',
+            book_time: '...',
+            full_name: '...',
+            phone: '...',
+            store_desk_order: [] as any[], 
+        } as StoreCustomerUse,
+    });
+    const orderList = ref<Array<{image: string,price: number,title:string, quantity: number }>>([]);
     const totalPrice = ref(Number);
-    const URL_IMAGE = 'http://giakhanh.local';
+    const URL_IMAGE = import.meta.env.VITE_API_BASE_URL;
 
     const phone = ref('');
     const voucher = ref('');
