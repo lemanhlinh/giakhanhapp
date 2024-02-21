@@ -24,6 +24,10 @@
     import { useRouter } from 'vue-router'
     import { ref, onMounted } from 'vue'
 
+    interface User {
+        name: string;
+    }
+
     const router = useRouter();
 
     const handleLogout = () => {
@@ -33,7 +37,7 @@
 
     const userInfoString = localStorage.getItem('userInfo'); 
 
-    const user = ref({});
+    const user = ref<User>();
 
     if (userInfoString) {
         const userInfo = JSON.parse(userInfoString);

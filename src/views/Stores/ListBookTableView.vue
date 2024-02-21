@@ -4,16 +4,18 @@
         <div class="flex justify-between items-start menu-table">
             <ul class="flex items-center">
                 <li>
-                    <AppLink name="tableDetail" :params="{storeId: storeId, tableId: tableId}" >Bàn đang sử dụng</AppLink>
+                    <AppLink name="tableDetail" :params="{storeId: storeId, floorId: floorId, tableId: tableId}" >Bàn đang sử dụng</AppLink>
                 </li>
                 <li>
                     <AppLink name="listBookTable" class="active">Bàn đặt trước</AppLink>
                 </li>
                 <li>
-                    <AppLink name="historyBook" >Lịch sử đặt bàn</AppLink>
+                    <AppLink name="historyBook" :params="{storeId: storeId, floorId: floorId, tableId: tableId}" >Lịch sử đặt bàn</AppLink>
                 </li>
             </ul>
-        <a href="" class="flex justify-between back-to-list-table"><IconBackTable class="mr-1.5" />Quay lại danh sách đặt bàn</a>
+            <AppLink name="listTable" :params="{id: storeId}" class="flex justify-between back-to-list-table">
+                <IconBackTable class="mr-1.5" />Quay lại danh sách bàn
+            </AppLink>
         </div>
         <div class="table-list-book-table">
             <table class="table-auto list-customer mb-5">
@@ -28,27 +30,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Trương Đình Toàn</td>
-                        <td>0978219820</td>
-                        <td>11:30 ngày 22/5/2023</td>
-                        <td>1961</td>
+                    <tr v-if="listOrder" v-for="(item, key) in listOrder" :key="key">
+                        <td>{{ key }}</td>
+                        <td>{{ item.full_name }}</td>
+                        <td>{{ item.phone }}</td>
+                        <td>{{ item.book_hour }} ngày {{ item.book_time }}</td>
                         <td>
-                            <p class="flex items-center justify-center">
-                                <IconDeleteBookNone class="mr-1.5" />Xóa
-                            </p>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" value="" class="sr-only peer" @click="handleClickChangeCome(item.id)" :checked="item.is_come == 1">
+                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-red-600"></div>
+                            </label>
                         </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Trương Đình Toàn</td>
-                        <td>0978219820</td>
-                        <td>11:30 ngày 22/5/2023</td>
-                        <td>1961</td>
                         <td>
                             <p class="flex items-center justify-center">
-                                <IconDeleteBook class="mr-1.5" />Xóa
+                                <IconDeleteBookNone class="mr-1.5" v-if="!isHovered" @mouseover="isHovered = true" />
+                                <IconDeleteBook class="mr-1.5" v-else @mouseout="isHovered = false" />
+                                Xóa
                             </p>
                         </td>
                     </tr>
@@ -148,8 +145,57 @@
   import IconDeleteBook from '../../components/icons/IconDeleteBook.vue'
   import IconDeleteBookNone from '../../components/icons/IconDeleteBookNone.vue'
   import AppLink from '../../components/AppLink.vue'
+  import { ref, onMounted } from 'vue'
+  import { post } from '../../services/api'
+  import { useRoute,useRouter } from 'vue-router'
 
-  import { useRoute } from 'vue-router';
+const { storeId, floorId, tableId } = useRoute().params;
 
-const { storeId, tableId } = useRoute().params;
+    const listOrder = ref<Array<{
+        phone: number,
+        full_name: string,
+        book_hour: string,
+        book_time: string,
+        is_come: number,
+        id: number
+    }>>([]);
+    const isHovered = ref(false)
+    const router = useRouter();
+
+    const fetchTableData = async () => {
+        try {
+            const data = {
+                store_id: storeId,
+                table_id: tableId,
+                status: 2,
+            }
+            const response = await post(`/danh-sach-dat-ban`, data);
+            listOrder.value = response.data; 
+        } catch (error) {
+            console.error('Error fetching table data:', error);
+        }
+    };
+
+    const handleClickChangeCome = async (id: number) => {
+        try {
+            const data = {
+                store_id: storeId,
+                table_id: tableId,
+                floor_id: floorId,
+                status: 3,
+                customer_id: id
+            }
+            const response = await post(`/khach-den`, data);
+            if(response.data){
+                alert(response.data.message);
+                router.push({ name: 'tableDetail', params: {storeId,tableId} });
+            }
+        } catch (error) {
+            console.error('Error fetching table data:', error);
+        }
+    };
+
+    onMounted(() => {
+        fetchTableData();
+    });
 </script>

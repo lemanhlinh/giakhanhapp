@@ -5,7 +5,7 @@
         <div class="flex justify-between items-start menu-table">
             <ul class="flex items-center">
                 <li>
-                    <AppLink name="tableDetail" :params="{storeId: storeId, tableId: tableId}" >Bàn đang sử dụng</AppLink>
+                    <AppLink name="tableDetail" :params="{storeId: storeId, floorId: floorId, tableId: tableId}" >Bàn đang sử dụng</AppLink>
                 </li>
                 <li>
                     <AppLink name="listBookTable" class="active">Bàn đặt trước</AppLink>
@@ -14,7 +14,9 @@
                     <AppLink name="historyBook" >Lịch sử đặt bàn</AppLink>
                 </li>
             </ul>
-        <a href="" class="flex justify-between back-to-list-table"><IconBackTable class="mr-1.5" />Quay lại danh sách đặt bàn</a>
+            <AppLink name="listTable" :params="{id: storeId}" class="flex justify-between back-to-list-table">
+                <IconBackTable class="mr-1.5" />Quay lại danh sách bàn
+            </AppLink>
         </div>
         <div class="table-book-table">
             <form ref="formRef"
@@ -134,7 +136,7 @@
     import { useRouter } from 'vue-router';
     import { useRoute } from 'vue-router';
 
-const { storeId, tableId } = useRoute().params;
+const { storeId, tableId, floorId } = useRoute().params;
 
     const phone = ref('');
     const date = ref('');
@@ -151,6 +153,7 @@ const { storeId, tableId } = useRoute().params;
             book_hour: time.value,
             store_id: storeId,
             table_id: tableId,
+            floor_id: floorId,
             status: 2,
         }
         const response = await post(`/them-dat-ban`,data);

@@ -11,7 +11,7 @@
             </AppLink>
           </div>
           <div class="flex justify-between show-detail-store">
-            <p class="flex items-center"><IconWrapper class="mr-1.5" /><span>8/22</span> bàn đang dùng</p>
+            <p class="flex items-center"><IconWrapper class="mr-1.5" /><span>{{ store.total_use }}/{{ store.store_floor_desk.length }}</span> bàn đang dùng</p>
             <AppLink
                 name="listTable"
                 :params="{id: store.id}"
@@ -68,20 +68,61 @@
   import IconWrapper from '../components/icons/IconWrapper.vue'
   import IconArrowRightWhite from '../components/icons/IconArrowRightWhite.vue'
   import AppLink from '../components/AppLink.vue'
+  import Echo from "laravel-echo"
 
   import { ref, onMounted } from 'vue';
-  import { get } from '../services/api';
+  import { get, post } from '../services/api';
+  const echoInstance = ref<any>(null);
 
-  const tableData = ref([]);
+  const userInfoString = localStorage.getItem('userInfo'); 
+  const tableData = ref<Array<{ id: string; title: string; total_use: number, store_floor_desk: [] }>>([]);
+  const list_messages = ref([]);
 
   const fetchTableData = async () => {
     try {
-      const response = await get('/danh-sach-cua-hang');
-      tableData.value = response.data; 
+      if (userInfoString) {
+          const userInfo = JSON.parse(userInfoString);
+          const data = {
+              stores_id: userInfo._value.stores
+          }
+          const response = await post('/danh-sach-cua-hang',data);
+          tableData.value = response.data; 
+      }
     } catch (error) {
       console.error('Error fetching table data:', error);
     }
   };
+
+  onMounted(() => {
+    // echoInstance.value = new Echo({
+    //   broadcaster: 'socket.io',
+    //   host: 'http://localhost:6001',
+    // });
+
+    // echoInstance.value.channel('laravel_database_chatroom')
+    //   .listen('.chatroom.shipped', (data: any) => {
+    //     console.log((data.message.active));
+    //     playNotificationSound();
+
+    //   });
+  });
+
+  const playNotificationSound = () => {
+    const audio = new Audio('/sounds/notification.mp3');
+    audio.play();
+  };
+
+
+  // connect pusher
+  // var pusher = new Pusher('501c68189750b6521f15', {
+  //   cluster: 'ap1'
+  // });
+
+  // var channel = pusher.subscribe('chatroom');
+  // channel.bind('.chatroom.shipped', function(data) {
+  //   console.log(data);
+  //   app.messages.push(JSON.stringify(data));
+  // });
 
 onMounted(fetchTableData);
 </script>

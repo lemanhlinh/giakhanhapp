@@ -1,31 +1,54 @@
 <template>
     <div class="list-table">
+        <ul>
+            <li v-for="message in messages" :key="message">{{ message }}</li>
+        </ul>
         <div class="container mx-auto">
             <div class="box-floor" v-if="storeTable" v-for="(floor, index) in storeTable" :key="index">
                 <h2 class="title-floor text-center">{{  floor.name }}</h2>
-                <div class="grid grid-cols-3 gap-10 list-table">
-                    <div class="item-table" v-if="floor.floor_desk" v-for="(table, index) in floor.floor_desk" :key="index">
-                        <div class="name-table">
-                            <AppLink
-                                name="tableDetail"
-                                :params="{storeId: id, tableId: table.id}"
-                                class="flex items-center"
-                            >
-                            <IconOrder class=" mr-2" />{{ table.name }}
-                            </AppLink>
-                        </div>
-                        <div class="flex justify-between items-center show-detail-table">
-                            <p class="flex flex-col">
-                                <span>Anh Toàn - 0978219820</span>
-                                <span>Đến lúc 11:30 ngày 22/5/2023</span>
-                            </p>
-                            <AppLink
-                                name="tableDetail"
-                                :params="{storeId: id, tableId: table.id}"
-                                class="flex items-center detail-store"
-                                >Chi tiết <IconArrowRightBrown />
-                            </AppLink>
-                        </div>
+                <div class="grid grid-cols-12 gap-10 list-table">
+                    <div class="item-table" v-if="floor.floor_desk" v-for="(table, index) in floor.floor_desk" :key="index" :class="{'table-null': table.check_use == 1, 'table-book': table.check_use == 2, 'col-span-6': table.type == 1, 'col-span-4': table.type == 0}" >
+                        <div :class="{'flex': table.type == 1}">
+                            <IconTableVip v-if="table.type == 1" class=" mr-5" />
+                            <div class="w-full">
+                                <div class="name-table">
+                                    <AppLink
+                                        :name="table.check_use == 2 ? 'listBookTable' : 'tableDetail'"
+                                        :params="{storeId: id, floorId: floor.id ,tableId: table.id}"
+                                        class="flex items-center"
+                                    >
+                                    <IconTableNull v-if="table.check_use == 1" class=" mr-2" />
+                                    <IconTableBook v-else-if="table.check_use == 2" class=" mr-2" />
+                                    <IconOrder v-else class="mr-2" />
+                                    {{ table.name }}: 
+                                    <span v-if="table.check_use == 1" class="ml-2" >Đang trống</span>
+                                    <span v-else-if="table.check_use == 2" class="ml-2">Đã có khách đặt</span>
+                                    <span v-else class="ml-2">Đã có khách ngồi</span>
+                                    </AppLink>
+                                </div>
+                                <div class="flex justify-between items-center show-detail-table">
+                                    <p class="flex flex-col" v-if="table.check_use == 1">
+                                        <span>Hiện chưa có khách đặt bàn</span>
+                                    </p>
+                                    <p class="flex flex-col" v-else-if="table.check_use == 2" v-if="table.store_customer[0]">
+                                        <span>{{ table.store_customer[0].full_name }}</span>
+                                        <span>Đến lúc {{ table.store_customer[0].book_hour }} ngày {{ table.store_customer[0].book_time }}</span>
+                                    </p>
+                                    <p class="flex flex-col" v-else v-if="table.store_customer[0]">
+                                        <span>{{ table.store_customer[0].full_name }}</span>
+                                        <span>Đến lúc {{ table.store_customer[0].book_hour }} ngày {{ table.store_customer[0].book_time }}</span>
+                                    </p>
+                                    <AppLink
+                                        :name="table.check_use == 2 ? 'listBookTable' : 'tableDetail'"
+                                        :params="{storeId: id, floorId: floor.id  ,tableId: table.id}"
+                                        class="flex items-center detail-store"
+                                        >Chi tiết <IconArrowRightWhite v-if="table.check_use == 1" />
+                                        <IconArrowRightBrown v-else-if="table.check_use == 2" />
+                                        <IconArrowRightBrown v-else />
+                                    </AppLink>
+                                </div>
+                            </div>
+                        </div>                        
                     </div> 
                 </div>
             </div>
@@ -70,6 +93,7 @@
                 color: #620B0E;
                 font-family: GoogleSans-Bold;
                 font-weight: 700;
+                width: 106px;
                 }
             }
             &:hover{
@@ -93,10 +117,10 @@
 }
 </style>
 <script setup lang="ts">
-    import IconWrapper from '../../components/icons/IconWrapper.vue'
-    import IconArrowRightBrown from '../../components/icons/IconArrowRightBrown.vue'
     import IconArrowRightWhite from '../../components/icons/IconArrowRightWhite.vue'
+    import IconArrowRightBrown from '../../components/icons/IconArrowRightBrown.vue'
     import IconOrder from '../../components/icons/IconOrder.vue'
+    import IconTableVip from '../../components/icons/IconTableVip.vue'
     import IconTableNull from '../../components/icons/IconTableNull.vue'
     import IconTableBook from '../../components/icons/IconTableBook.vue'
     import AppLink from '../../components/AppLink.vue'
@@ -104,21 +128,66 @@
     import { ref, onMounted } from 'vue';
     import { useRoute } from 'vue-router';
     import { get } from '../../services/api';
-
-    const storeTable = ref([]);
+    
+    const storeTable = ref<Array<{
+        id: string,
+        name: string,
+         floor_desk: [
+            {
+                check_use: number,
+                name: string,
+                type: number,
+                id: string,
+                store_customer: [{
+                    book_hour: string,
+                    book_time: string,
+                    full_name: string
+                }]
+            }
+        ]}>>([]);
+    const messages = ref([]);
+    const eventData = ref(null);
 
     const { id } = useRoute().params;
 
     const fetchTableData = async () => {
-    try {
-        
-        const response = await get(`/danh-sach-ban/${id}`);
-        storeTable.value = response.data; 
-    } catch (error) {
-        console.error('Error fetching table data:', error);
-    }
+        try {
+            const response = await get(`/danh-sach-ban/${id}`);
+            storeTable.value = response.data; 
+        } catch (error) {
+            console.error('Error fetching table data:', error);
+        }
     };
 
-onMounted(fetchTableData);
+    const testTableData = async () => {
+        try {
+            // console.log('onMounted is called');
+            // const channel = window.Echo.channel('laravel_database_chatroom');
+            // console.log('Channel:', channel);
+
+            // channel.listen('MessagePosted', (event) => {
+            //     console.log('Event received:', event);
+            //     eventData.value = event;
+            //     // Handle the event data here
+            // });
+
+            // window.Echo.channel('laravel_database_chatroom')
+            //     .listen('MessagePosted', (data) => {
+            //         // Xử lý dữ liệu nhận được từ Laravel
+            //         // messages.value.push(data.message);
+            //         console.log('Event received:', data);
+            //         eventData.value = data
+            //     });
+                
+        } catch (error) {
+            console.error('Error fetching table data:', error);
+        }
+    };
+    
+    onMounted(() => {
+        fetchTableData();
+        // testTableData();
+    }
+    );
 
 </script>

@@ -2,9 +2,13 @@ import { ref } from 'vue';
 import axios from "axios";
 import { logout } from '@/composition/auth';
 
-const API_URL = 'http://giakhanh.local/api';
+const API_URL = import.meta.env.VITE_API_BASE_URL+'/api';
 
-const token = ref(null);
+interface newToken {
+  newToken: string;
+}
+
+const token = ref<newToken>();
 
 const setAuthHeader = () => {
   const token = localStorage.getItem('token');
@@ -17,17 +21,18 @@ const setAuthHeader = () => {
   }
 };
 
-const setToken = (newToken) => {
+
+const setToken = (newToken: newToken) => {
   token.value = newToken;
   axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
 };
 
 const removeToken = () => {
-  token.value = null;
+  token.value = undefined;
   delete axios.defaults.headers.common['Authorization'];
 };
 
-const post = async (resource, data) => {
+const post = async (resource: string, data: {}) => {
   setAuthHeader();
   try {
     const response = await axios.post(`${API_URL}${resource}`, data);
@@ -38,7 +43,7 @@ const post = async (resource, data) => {
   }
 };
 
-const get = async (resource) => {
+const get = async (resource: string) => {
   setAuthHeader();
   try {
     const response = await axios.get(`${API_URL}${resource}`);
@@ -49,7 +54,7 @@ const get = async (resource) => {
   }
 };
 
-const handleApiError = (error) => {
+const handleApiError = (error: any) => {
   if (error.response && error.response.status === 401 && error.response.data.message === 'Unauthenticated.') {
     logout(); 
   }
