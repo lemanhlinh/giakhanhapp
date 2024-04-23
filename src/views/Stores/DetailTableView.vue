@@ -442,22 +442,48 @@
         listFoods()
     });
 
-    import Echo from "laravel-echo"
-    const echoInstance = ref<any>(null);
+    // import Echo from "laravel-echo"
+    // const echoInstance = ref<any>(null);
 
-    onMounted(() => {
-        // echoInstance.value = new Echo({
-        // broadcaster: 'socket.io',
-        // host: 'http://localhost:6001',
-        // });
+    // onMounted(() => {
+    //     echoInstance.value = new Echo({
+    //     broadcaster: 'socket.io',
+    //     host: 'http://localhost:6001',
+    //     });
 
-        // echoInstance.value.channel('laravel_database_order-food')
-        // .listen('.order.food', (data: any) => {
-        //     console.log((data));
-        //     playNotificationSound();
+    //     echoInstance.value.channel('laravel_database_order-food')
+    //     .listen('.order.food', (data: any) => {
+    //         console.log((data));
+    //         if(data.message.store_id == storeId && data.message.floor_id == floorId && data.message.table_id == tableId){
+    //             const currentOrderList = orderList.value;
 
-        // });
-    });
+    //             const listProduct = data.message.order_list;
+
+    //             listFood.value = listProduct.map((food: Products) => ({ ...food }));
+
+    //             // const quantityToAdd = data.message.order_list.quantity;
+
+    //             // const existingItemIndex = currentOrderList.findIndex((item) => item.product_id == data.message.order_list.id);
+
+    //             // const storeDeskOrder = {
+    //             //     customer_id: dataTable.value.store_customer_use.id,
+    //             //     product_id: food.id,
+    //             //     image: food.image,
+    //             //     title: food.title,
+    //             //     price: food.price,
+    //             //     quantity: quantityToAdd
+    //             // }
+    //             // if (existingItemIndex == -1) {
+    //             //     currentOrderList.push({ ...storeDeskOrder });
+    //             // } else {
+    //             //     currentOrderList[existingItemIndex].quantity = currentOrderList[existingItemIndex].quantity + quantityToAdd;
+    //             // }
+    //             // orderList.value = currentOrderList;
+    //         }
+    //         // playNotificationSound();
+
+    //     });
+    // });
 
     const playNotificationSound = () => {
         const audio = new Audio('/sounds/notification.mp3');
