@@ -30,7 +30,7 @@
                         </div>
                         <div class="grid grid-cols-5 mb-5">
                             <label for="" class="flex items-center col-span-2">Số tiền</label>
-                            <span class="text-right col-span-3"><b>{{ totalPrice }}đ</b></span>
+                            <span class="text-right col-span-3"><b>{{ formatNumber(totalPrice) }}đ</b></span>
                         </div>
                         <div class="grid grid-cols-5 mb-5">
                             <label for="" class="flex items-center col-span-2">Giảm giá</label>
@@ -38,7 +38,7 @@
                         </div>
                         <div class="grid grid-cols-5 mb-5">
                             <label for="" class="flex items-center col-span-2">Số tiền thanh toán</label>
-                            <span class="text-right col-span-3 total-price-pay">{{ totalPrice }}đ</span>
+                            <span class="text-right col-span-3 total-price-pay">{{ formatNumber(totalPrice) }}đ</span>
                         </div>
                         <div class="grid grid-cols-5 mb-5">
                             <label for="" class="flex items-center col-span-2">Tên khách</label>
@@ -49,7 +49,13 @@
                             <input type="text" class="text-right col-span-3" v-model="phone">
                         </div>
                         <div class="grid grid-cols-5 mb-5">
-                            <div class="col-span-2"></div>
+                            <label for="" class="flex items-center col-span-2">QR cửa hàng</label>
+                            <img v-if="dataTable.store.image_qr"  :src="`${URL_IMAGE}${dataTable.store.image_qr}`" alt="">
+                        </div>
+                        <div class="grid grid-cols-5 mb-5">
+                            <div class="col-span-2">
+                                <a @click="printMenu" class="flex items-center back-order w-2/3">In Hóa Đơn</a>
+                            </div>
                             <div class="flex justify-between grap-3 col-span-3">
                                 <a href="" class="flex items-center back-order"><IconBackTable class="mr-1.5" /> Quay lại</a>
                                 <button class="flex items-center end-order">Kết thúc đặt bàn <IconArrowRightWhite class="ml-1.5" /></button>
@@ -68,7 +74,7 @@
                             </div>
                             <div class="name-price">
                                 <p>{{ orderItem.title }}</p>
-                                <p>Đơn giá: {{ orderItem.price }}đ</p>
+                                <p>Đơn giá: {{ formatNumber(orderItem?.price) }}đ</p>
                             </div>
                         </div>
                         <div class="flex items-center right-food">
@@ -82,6 +88,15 @@
     </div>
   </template>
 <style scoped lang="scss">
+@media print {
+  body * {
+    display: none;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+}
 .detail-table{
     .menu-table{
         border-bottom: 1px solid #F1F0F0;
@@ -239,6 +254,7 @@
   import { ref, onMounted, watchEffect } from 'vue';
     import { get, post } from '../../services/api';
     import { useRoute, useRouter } from 'vue-router';
+    import { formatNumber } from '../../helpers';
     const router = useRouter();
 
     const { storeId, tableId, floorId } = useRoute().params;
@@ -261,9 +277,13 @@
             phone: '...',
             store_desk_order: [] as any[], 
         } as StoreCustomerUse,
+        store: {
+            id: 0,
+            image_qr: null
+        }
     });
     const orderList = ref<Array<{image: string,price: number,title:string, quantity: number }>>([]);
-    const totalPrice = ref(Number);
+    const totalPrice = ref(0);
     const URL_IMAGE = import.meta.env.VITE_API_BASE_URL;
 
     const phone = ref('');
@@ -331,5 +351,36 @@
             // alert('Sai tên đăng nhập hoặc mật khẩu');
             console.error('Login error:', error);
         }
+    };
+
+    const printMenu = () => {
+        const printWindow = window.open('', '_blank');
+        
+        let content = `
+            <div>
+            <div>Thời gian phục vụ: 10:00 - 22:00</div>
+            <div>Các món ăn</div>
+            </div>
+        `;
+        orderList.value.forEach((item) => {
+            content += `
+                <div>Món: ${item.title}</div>
+                <div>Giá: ${formatNumber(item.price)}</div>
+                <div>Số lượng: ${item.quantity}</div>
+            `;
+        });
+
+        content += `<div>Tổng tiền: ${formatNumber(totalPrice.value)}</div>`;
+        content += `<div><img src="${URL_IMAGE}${dataTable.value.store.image_qr}" /></div>`;
+
+        content += `</div>`;
+
+        printWindow?.document.write(content);
+
+        printWindow?.print();
+
+        printWindow?.addEventListener('beforeunload', () => {
+            printWindow?.close();
+        });
     };
 </script>
